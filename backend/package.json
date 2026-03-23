@@ -10,9 +10,10 @@
     "lint:check": "eslint .",
     "format:check": "prettier . --check",
     "prepare": "eslint . --fix && prettier . --write",
-    "generate":"prisma generate",
-    "dev": "generate && tsc -b && node dist/index.js",
-    "build": "generate && tsc -b",
+    "migrate": "npx prisma migrate dev",
+    "generate": "prisma generate",
+    "dev": "npm run generate && tsc -b && node dist/index.js",
+    "build": "npm run generate && tsc -b",
     "start": "node dist/index.js"
   },
   "keywords": [],
@@ -22,7 +23,9 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^1.1.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
     "@types/pg": "^8.18.0",
     "@typescript-eslint/eslint-plugin": "^8.57.1",
@@ -40,8 +43,11 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "pg": "^8.20.0"
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
+    "zod": "^4.3.6"
   }
 }
