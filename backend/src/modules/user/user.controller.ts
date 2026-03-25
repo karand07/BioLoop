@@ -41,7 +41,8 @@ class UserController {
       const userLogin = await userServices.login(result.data);
       return res.status(200).json({
         message: "Login Successful",
-        token: userLogin,
+        token: userLogin.token,
+        role:userLogin.role
       });
     } catch (error) {
       return res.status(500).json({
