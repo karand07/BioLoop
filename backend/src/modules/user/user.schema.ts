@@ -8,9 +8,9 @@ export const userSchema = z.object({
     .max(15, "password is to long"),
   role: z.enum(["farmer", "company", "admin", "logistics"]),
   phone: z
-    .number()
-    .min(10, "enter valid modile no.")
-    .max(10, "enter valid modile no."),
+    .string()
+    .length(10, "enter valid mobile no.")
+    .regex(/^[0-9]+$/, "phone must contain only digits"),
 });
 
 export type userInputType = z.infer<typeof userSchema>;
