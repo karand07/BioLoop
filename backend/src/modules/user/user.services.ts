@@ -50,15 +50,20 @@ class UserServices {
       throw new Error("Invalid Password");
     }
 
+    if (!is_userExist.is_verified) {
+      throw new Error("Account pending admin approval");
+    }
+
     const token = jwt.sign(
       { id: is_userExist.id, role: is_userExist.role },
       JWT_SECRET!,
+      { expiresIn: "4h" },
     );
 
     if (!token) {
       throw new Error("Something went wrong try again later");
     }
-    return token;
+    return { token, role: is_userExist.role };
   }
 }
 
