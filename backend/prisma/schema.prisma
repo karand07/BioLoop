@@ -19,6 +19,13 @@ enum UserRoles{
   logistics
 }
 
+enum VehicleType {
+  small
+  medium
+  large
+}
+
+// user table
 model Users{
  id     Int @id @default(autoincrement())
  email  String @unique
@@ -27,4 +34,44 @@ model Users{
  phone String
  is_verified Boolean
  created_at DateTime @default(now())
+ farmer_profile    FarmerProfile?
+ company_profile   CompanyProfile?
+ logistics_profile LogisticsProfile?
  }
+
+//farmer profile
+ model FarmerProfile {
+  farmer_id       Int     @id               
+  farm_name       String
+  farm_address    String
+  city            String
+  state           String
+  latitude        Decimal @db.Decimal(9, 6)
+  longitude       Decimal @db.Decimal(9, 6)
+  land_size_acres Decimal @db.Decimal(10, 2)
+
+  user Users @relation(fields: [farmer_id], references: [id])
+}
+
+//company profile
+model CompanyProfile {
+  company_id    Int     @id               
+  company_name  String
+  business_type String
+  address       String
+  latitude      Decimal @db.Decimal(9, 6)
+  longitude     Decimal @db.Decimal(9, 6)
+  gst_number    String?
+
+  user Users @relation(fields: [company_id], references: [id])
+}
+
+// logistics profile
+model LogisticsProfile {
+  logistics_id   Int         @id               
+  vehicle_type   VehicleType
+  vehicle_number String
+  service_area   String
+
+  user Users @relation(fields: [logistics_id], references: [id])
+}

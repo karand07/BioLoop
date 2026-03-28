@@ -42,7 +42,7 @@ class UserController {
       return res.status(200).json({
         message: "Login Successful",
         token: userLogin.token,
-        role:userLogin.role
+        role: userLogin.role,
       });
     } catch (error) {
       return res.status(500).json({
