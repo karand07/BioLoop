@@ -11,7 +11,7 @@ class FarmerController {
       if (!result.success) {
         return res.status(400).json({
           message: "Invalid data",
-          error: result.error.flatten,
+          error: result.error.issues,
         });
       }
 
@@ -21,14 +21,11 @@ class FarmerController {
         message: "Farmer Created Successfuly",
         data: farmerCreate,
       });
-
     } catch (error) {
-
       return res.status(500).json({
         message:
           error instanceof Error ? error.message : "Unkown error occured",
       });
-
     }
   };
 
@@ -38,12 +35,10 @@ class FarmerController {
       const result = updateFarmSchema.safeParse(req.body);
 
       if (!result.success) {
-
         return res.status(400).json({
           message: "Invalid data",
-          error: result.error.flatten,
+          error: result.error.issues,
         });
-
       }
 
       const farmerUpdate = await farmerServises.update(result.data, userId!);
@@ -52,14 +47,11 @@ class FarmerController {
         message: "Farmer Updated Successfuly",
         data: farmerUpdate,
       });
-
     } catch (error) {
-
       return res.status(500).json({
         message:
           error instanceof Error ? error.message : "Unkown error occured",
       });
-
     }
   };
 }
