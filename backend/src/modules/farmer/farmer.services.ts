@@ -14,6 +14,16 @@ class FarmerServices {
     }: createFarmerType,
     userId: number,
   ) {
+    const farmer = await prisma.farmerProfile.findUnique({
+      where: {
+        farmer_id: userId,
+      },
+    });
+
+    if (farmer) {
+      throw new Error("Farmer already registered");
+    }
+
     const createdFarmer = await prisma.farmerProfile.create({
       data: {
         farmer_id: userId,

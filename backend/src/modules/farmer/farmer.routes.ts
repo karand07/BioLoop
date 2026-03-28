@@ -4,7 +4,7 @@ import { farmerController } from "./farmer.controller.js";
 
 const farmerRoute = Router();
 
-farmerRoute.post('/create',authenticate,isFarmer,farmerController.Create);
-farmerRoute.put('/update',authenticate,isFarmer,farmerController.Update);
+farmerRoute.post("/create", authenticate, isFarmer, farmerController.Create);
+farmerRoute.put("/update", authenticate, isFarmer, farmerController.Update);
 
-export {farmerRoute};
+export { farmerRoute };

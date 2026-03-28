@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { farmerServises } from "./farmer.services.js";
-import { farmSchema, updateFarmSchema } from "./farmer.schema.js";
+import { createCompanySchema, updateCompanySchema } from "./company.schema.js";
+import { companyServises } from "./company.services.js";
 
-class FarmerController {
+class CompanyController {
   Create = async (req: Request, res: Response) => {
     try {
       const userId = req.user?.id;
-      const result = farmSchema.safeParse(req.body);
+      const result = createCompanySchema.safeParse(req.body);
 
       if (!result.success) {
         return res.status(400).json({
@@ -15,11 +15,11 @@ class FarmerController {
         });
       }
 
-      const farmerCreate = await farmerServises.create(result.data, userId!);
+      const companyCreate = await companyServises.create(result.data, userId!);
 
       return res.status(200).json({
-        message: "Farmer Created Successfuly",
-        data: farmerCreate,
+        message: "Company Created Successfuly",
+        data: companyCreate,
       });
     } catch (error) {
       return res.status(500).json({
@@ -32,7 +32,7 @@ class FarmerController {
   Update = async (req: Request, res: Response) => {
     try {
       const userId = req.user?.id;
-      const result = updateFarmSchema.safeParse(req.body);
+      const result = updateCompanySchema.safeParse(req.body);
 
       if (!result.success) {
         return res.status(400).json({
@@ -41,11 +41,11 @@ class FarmerController {
         });
       }
 
-      const farmerUpdate = await farmerServises.update(result.data, userId!);
+      const companyUpdate = await companyServises.update(result.data, userId!);
 
       return res.status(200).json({
-        message: "Farmer Updated Successfuly",
-        data: farmerUpdate,
+        message: "Company Updated Successfuly",
+        data: companyUpdate,
       });
     } catch (error) {
       return res.status(500).json({
@@ -56,4 +56,4 @@ class FarmerController {
   };
 }
 
-export const farmerController = new FarmerController();
+export const companyController = new CompanyController();

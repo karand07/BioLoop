@@ -9,7 +9,7 @@ class UserController {
       if (!result.success) {
         return res.status(400).json({
           message: "Invalid data",
-          errors: result.error,
+          errors: result.error.issues,
         });
       }
 
@@ -34,7 +34,7 @@ class UserController {
       if (!result.success) {
         return res.status(400).json({
           message: "Invalid data",
-          error: result.error,
+          error: result.error.issues,
         });
       }
 
