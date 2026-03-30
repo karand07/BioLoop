@@ -146,7 +146,7 @@ model LogisticsProfile {
 //waste category 
 model Waste_Category {
   category_id Int @id @default(autoincrement())
-  name String
+  name String @unique
   description String
   min_ref_price Decimal       @db.Decimal(10, 2)
   max_ref_price Decimal       @db.Decimal(10, 2)
