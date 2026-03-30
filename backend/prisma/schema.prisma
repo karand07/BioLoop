@@ -25,6 +25,66 @@ enum VehicleType {
   large
 }
 
+enum ListingStatus {
+  active
+  sold
+  expired
+}
+
+enum RequestStatus {
+  pending
+  negotiating
+  accepted
+  rejected
+  auto_rejected
+}
+
+enum OrderStatus {
+  confirmed
+  in_transit
+  delivered
+  closed
+  disputed
+}
+
+enum ProposedBy {
+  farmer
+  company
+}
+
+enum ScheduleStatus {
+  pending
+  confirmed
+  picked_up
+  delivered
+}
+
+enum PaymentStatus {
+  pending
+  captured
+  held
+  released
+  refunded
+}
+
+enum PayoutStatus {
+  pending
+  processed
+  failed
+}
+
+enum RecipientType {
+  farmer
+  logistics
+}
+
+enum NotificationType {
+  order
+  payment
+  logistics
+  system
+}
+
 // user table
 model Users{
  id     Int @id @default(autoincrement())
@@ -37,6 +97,7 @@ model Users{
  farmer_profile    FarmerProfile?
  company_profile   CompanyProfile?
  logistics_profile LogisticsProfile?
+ notifications Notification[]
  }
 
 //farmer profile
@@ -51,6 +112,9 @@ model Users{
   land_size_acres Decimal @db.Decimal(10, 2)
 
   user Users @relation(fields: [farmer_id], references: [id])
+  listings       Waste_Listings[]
+  order_requests Order_Request[]
+  orders         Order[]
 }
 
 //company profile
@@ -64,6 +128,8 @@ model CompanyProfile {
   gst_number    String?
 
   user Users @relation(fields: [company_id], references: [id])
+  order_requests Order_Request[]
+  orders         Order[]
 }
 
 // logistics profile
@@ -74,4 +140,138 @@ model LogisticsProfile {
   service_area   String
 
   user Users @relation(fields: [logistics_id], references: [id])
+  pickup_schedules Pickup_Schedule[]
+}
+
+//waste category 
+model Waste_Category {
+  category_id Int @id @default(autoincrement())
+  name String
+  description String
+  min_ref_price Decimal       @db.Decimal(10, 2)
+  max_ref_price Decimal       @db.Decimal(10, 2)
+  unit String
+  updated_at DateTime @updatedAt
+
+  listings Waste_Listings[]
+}
+
+model Waste_Listings {
+  listing_id     Int           @id @default(autoincrement())
+  farmer_id      Int
+  category_id    Int
+  quantity       Decimal       @db.Decimal(10, 2)
+  asking_price   Decimal       @db.Decimal(10, 2)
+  description    String
+  images         String
+  available_from DateTime      @db.Date
+  status         ListingStatus @default(active)
+  created_at     DateTime      @default(now())
+
+  farmer         FarmerProfile  @relation(fields: [farmer_id], references: [farmer_id])
+  category       Waste_Category @relation(fields: [category_id], references: [category_id])
+  order_requests Order_Request[]
+}
+
+model Order_Request {
+  request_id         Int           @id @default(autoincrement())
+  listing_id         Int
+  company_id         Int
+  farmer_id          Int
+  requested_quantity Decimal       @db.Decimal(10, 2)
+  offered_price      Decimal       @db.Decimal(10, 2)
+  message            String?
+  status             RequestStatus @default(pending)
+  is_active          Boolean       @default(true)
+  created_at         DateTime      @default(now())
+
+  listing      Waste_Listings @relation(fields: [listing_id], references: [listing_id])
+  company      CompanyProfile @relation(fields: [company_id], references: [company_id])
+  farmer       FarmerProfile  @relation(fields: [farmer_id], references: [farmer_id])
+  negotiations Negotiation[]
+  order        Order?
+}
+
+model Negotiation {
+  negotiation_id Int        @id @default(autoincrement())
+  request_id     Int
+  proposed_by    ProposedBy
+  proposed_price Decimal    @db.Decimal(10, 2)
+  message        String?
+  created_at     DateTime   @default(now())
+
+  request Order_Request @relation(fields: [request_id], references: [request_id])
+}
+
+model Order {
+  order_id            Int         @id @default(autoincrement())
+  request_id          Int         @unique
+  farmer_id           Int
+  company_id          Int
+  final_price         Decimal     @db.Decimal(10, 2)
+  quantity            Decimal     @db.Decimal(10, 2)
+  delivery_cost       Decimal     @db.Decimal(10, 2)
+  platform_commission Decimal     @db.Decimal(10, 2)
+  total_amount        Decimal     @db.Decimal(10, 2)
+  status              OrderStatus @default(confirmed)
+  created_at          DateTime    @default(now())
+
+  request         Order_Request   @relation(fields: [request_id], references: [request_id])
+  farmer          FarmerProfile   @relation(fields: [farmer_id], references: [farmer_id])
+  company         CompanyProfile  @relation(fields: [company_id], references: [company_id])
+  pickup_schedule Pickup_Schedule?
+  payment         Payment?
+  payouts         Payout[]
+}
+
+model Pickup_Schedule {
+  schedule_id      Int            @id @default(autoincrement())
+  order_id         Int            @unique
+  logistics_id     Int
+  proposed_slots   Json
+  confirmed_slot   DateTime?
+  status           ScheduleStatus @default(pending)
+  pickup_address   String
+  delivery_address String
+  distance_km      Decimal        @db.Decimal(10, 2)
+
+  order     Order            @relation(fields: [order_id], references: [order_id])
+  logistics LogisticsProfile @relation(fields: [logistics_id], references: [logistics_id])
+}
+
+model Payment {
+  payment_id          Int           @id @default(autoincrement())
+  order_id            Int           @unique
+  razorpay_order_id   String
+  razorpay_payment_id String?
+  amount              Decimal       @db.Decimal(10, 2)
+  status              PaymentStatus @default(pending)
+  paid_at             DateTime?
+
+  order Order @relation(fields: [order_id], references: [order_id])
+}
+
+model Payout {
+  payout_id          Int           @id @default(autoincrement())
+  order_id           Int
+  recipient_type     RecipientType
+  recipient_id       Int
+  amount             Decimal       @db.Decimal(10, 2)
+  razorpay_payout_id String?
+  status             PayoutStatus  @default(pending)
+  processed_at       DateTime?
+
+  order Order @relation(fields: [order_id], references: [order_id])
+}
+
+model Notification {
+  notification_id Int              @id @default(autoincrement())
+  user_id         Int
+  title           String
+  message         String
+  type            NotificationType
+  is_read         Boolean          @default(false)
+  created_at      DateTime         @default(now())
+
+  user Users @relation(fields: [user_id], references: [id])
 }
