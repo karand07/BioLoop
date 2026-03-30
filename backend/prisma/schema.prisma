@@ -148,8 +148,8 @@ model Waste_Category {
   category_id Int @id @default(autoincrement())
   name String
   description String
-  min_ref_price Int
-  max_ref_price Int
+  min_ref_price Decimal       @db.Decimal(10, 2)
+  max_ref_price Decimal       @db.Decimal(10, 2)
   unit String
   updated_at DateTime @updatedAt
 
