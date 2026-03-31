@@ -19,19 +19,15 @@ export const updateWasteCategorySchema = wasteCategorySchema.partial();
 export type updateWasteCategoryType = z.infer<typeof updateWasteCategorySchema>;
 
 export const wasteListingsSchema = z.object({
-    quantity : z
-    .number("Max price must be a number")
-    .nonnegative(),
+  quantity: z.number("Max price must be a number").nonnegative(),
 
-    asking_price : z
-    .number("Max price must be a number")
-    .nonnegative(),
+  asking_price: z.number("Max price must be a number").nonnegative(),
 
-    description: z.string().optional(),
-    available_from:z.date(),
-    status:z.enum(ListingStatus).default('active')
-})
+  description: z.string().optional(),
+  available_from: z.date(),
+  status: z.enum(ListingStatus).default("active"),
+});
 
 export type wasteListingsType = z.infer<typeof wasteListingsSchema>;
 export const updateWasteListingSchema = wasteListingsSchema.partial();
-export type updateWasteListingType = z.infer<typeof updateWasteListingSchema>
+export type updateWasteListingType = z.infer<typeof updateWasteListingSchema>;

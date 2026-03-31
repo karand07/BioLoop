@@ -1,6 +1,13 @@
 import { Router } from "express";
-import { wasteCategoryController, wasteListingController } from "./waste.controller.js";
-import { authenticate, isAdmin, isFarmer } from "../../middleware/auth.middleware.js";
+import {
+  wasteCategoryController,
+  wasteListingController,
+} from "./waste.controller.js";
+import {
+  authenticate,
+  isAdmin,
+  isFarmer,
+} from "../../middleware/auth.middleware.js";
 const wasteCategoryRoute = Router();
 
 wasteCategoryRoute.post(
@@ -26,10 +33,25 @@ wasteCategoryRoute.delete(
 
 const wasteListingsRoute = Router();
 
-wasteListingsRoute.post('/create',authenticate,isFarmer, wasteListingController.create);
+wasteListingsRoute.post(
+  "/create",
+  authenticate,
+  isFarmer,
+  wasteListingController.create,
+);
 
-wasteListingsRoute.put('/update/:listing_id',authenticate,isFarmer,wasteListingController.update);
+wasteListingsRoute.put(
+  "/update/:listing_id",
+  authenticate,
+  isFarmer,
+  wasteListingController.update,
+);
 
-wasteListingsRoute.put('/delete/:listing_id',authenticate,isFarmer,wasteListingController.update);
+wasteListingsRoute.put(
+  "/delete/:listing_id",
+  authenticate,
+  isFarmer,
+  wasteListingController.update,
+);
 
 export { wasteCategoryRoute, wasteListingsRoute };
