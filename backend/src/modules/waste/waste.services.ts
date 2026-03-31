@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
-import { updateWasteCategoryType, wasteCategoryType } from "./waste.schema.js";
+import { updateWasteCategoryType, updateWasteListingType, wasteCategoryType, wasteListingsType } from "./waste.schema.js";
 
 class WasteCategoryServices {
   async create({
@@ -22,7 +22,7 @@ class WasteCategoryServices {
     const newCategory = await prisma.waste_Category.create({
       data: {
         name,
-        description: description || "",
+        description: description ?? "",
         min_ref_price,
         max_ref_price,
         unit,
@@ -75,4 +75,69 @@ class WasteCategoryServices {
   }
 }
 
+class WasteListingsServices{
+  async create(data:wasteListingsType,Imgurl:string,farmer_id:number,category_id:number){
+    const listing = await prisma.waste_Listings.create({
+      data:{
+        ...data,
+        farmer_id,
+        category_id,
+        images:Imgurl,
+        description : data.description ?? ""
+      }
+    })
+
+    return listing;
+  }
+
+  async update(data:updateWasteListingType,Imgurl:string,category_id:number,listing_id:number){
+    const listing = await prisma.waste_Listings.findUnique({
+      where:{
+        listing_id
+      }
+    })
+
+    if(!listing){
+      throw new Error("Listing do not exist")
+    }
+
+    const updateListing = await prisma.waste_Listings.update({
+      where:{
+        listing_id
+      },
+      data:{
+        ...data,
+        ...(Imgurl !== undefined && { images: Imgurl }),
+        ...(category_id !== undefined && { category_id })
+      }
+    })
+
+    return updateListing;
+  }
+
+  async delete(listing_id:number){
+    const listing = await prisma.waste_Listings.findUnique({
+      where:{
+        listing_id
+      }
+    })
+
+    if(!listing){
+      throw new Error("Listing do not exist")
+    }
+
+    const deactivated = await prisma.waste_Listings.update({
+      where:{
+        listing_id
+      },
+      data:{
+        status:"expired"
+      }
+    })
+
+    return deactivated;
+  }
+}
+
 export const wasteCategoryServices = new WasteCategoryServices();
+export const wasteListingServices  = new WasteListingsServices();
