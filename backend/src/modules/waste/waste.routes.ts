@@ -8,6 +8,7 @@ import {
   isAdmin,
   isFarmer,
 } from "../../middleware/auth.middleware.js";
+import upload from "../utils/multer.js";
 const wasteCategoryRoute = Router();
 
 wasteCategoryRoute.post(
@@ -37,6 +38,7 @@ wasteListingsRoute.post(
   "/create",
   authenticate,
   isFarmer,
+  upload.single("file"),
   wasteListingController.create,
 );
 
@@ -44,6 +46,7 @@ wasteListingsRoute.put(
   "/update/:listing_id",
   authenticate,
   isFarmer,
+  upload.single("file"),
   wasteListingController.update,
 );
 
@@ -51,7 +54,7 @@ wasteListingsRoute.put(
   "/delete/:listing_id",
   authenticate,
   isFarmer,
-  wasteListingController.update,
+  wasteListingController.delete,
 );
 
 export { wasteCategoryRoute, wasteListingsRoute };

@@ -105,9 +105,13 @@ class WasteListingsController {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
+      if (!req.file) {
+        return res.status(400).json({ message: "Image is required" });
+      }
+
+      const Imgurl = req.file.path;
+
       const result = wasteListingsSchema.safeParse(req.body);
-      const Imgurl = req.file?.path ?? "";
-      const category_id = req.body.category_id;
 
       if (!result.success) {
         return res.status(400).json({
@@ -117,10 +121,8 @@ class WasteListingsController {
       }
 
       const newListings = await wasteListingServices.create(
-        result.data,
-        Imgurl,
+        { ...result.data, images: Imgurl },
         farmer_id,
-        category_id,
       );
 
       return res.status(200).json({
@@ -141,13 +143,11 @@ class WasteListingsController {
 
       if (isNaN(listing_id)) {
         return res.status(400).json({
-          message: "Invalid category_id",
+          message: "Invalid_id",
         });
       }
 
       const result = updateWasteListingSchema.safeParse(req.body);
-      const Imgurl = req.file?.path ?? "";
-      const category_id = req.body.category_id;
 
       if (!result.success) {
         return res.status(400).json({
@@ -156,10 +156,14 @@ class WasteListingsController {
         });
       }
 
+      const Imgurl = req.file?.path;
+
+      if (!Imgurl) {
+        result.data.images = Imgurl;
+      }
+
       const listing = await wasteListingServices.update(
         result.data,
-        Imgurl,
-        category_id,
         listing_id,
       );
 

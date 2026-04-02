@@ -162,7 +162,7 @@ model Waste_Listings {
   category_id    Int
   quantity       Decimal       @db.Decimal(10, 2)
   asking_price   Decimal       @db.Decimal(10, 2)
-  description    String
+  description    String?
   images         String
   available_from DateTime      @db.Date
   status         ListingStatus @default(active)

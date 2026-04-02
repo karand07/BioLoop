@@ -81,31 +81,18 @@ class WasteCategoryServices {
 }
 
 class WasteListingsServices {
-  async create(
-    data: wasteListingsType,
-    Imgurl: string,
-    farmer_id: number,
-    category_id: number,
-  ) {
+  async create(data: wasteListingsType, farmer_id: number) {
     const listing = await prisma.waste_Listings.create({
       data: {
         ...data,
         farmer_id,
-        category_id,
-        images: Imgurl,
-        description: data.description ?? "",
       },
     });
 
     return listing;
   }
 
-  async update(
-    data: updateWasteListingType,
-    Imgurl: string,
-    category_id: number,
-    listing_id: number,
-  ) {
+  async update(data: updateWasteListingType, listing_id: number) {
     const listing = await prisma.waste_Listings.findUnique({
       where: {
         listing_id,
@@ -122,8 +109,6 @@ class WasteListingsServices {
       },
       data: {
         ...data,
-        ...(Imgurl !== undefined && { images: Imgurl }),
-        ...(category_id !== undefined && { category_id }),
       },
     });
 
