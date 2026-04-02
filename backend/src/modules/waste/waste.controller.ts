@@ -5,6 +5,7 @@ import {
 } from "./waste.services.js";
 import {
   updateWasteCategorySchema,
+  updateWasteListingSchema,
   wasteCategorySchema,
   wasteListingsSchema,
 } from "./waste.schema.js";
@@ -144,7 +145,7 @@ class WasteListingsController {
         });
       }
 
-      const result = updateWasteCategorySchema.safeParse(req.body);
+      const result = updateWasteListingSchema.safeParse(req.body);
       const Imgurl = req.file?.path ?? "";
       const category_id = req.body.category_id;
 
