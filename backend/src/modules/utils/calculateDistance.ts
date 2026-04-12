@@ -1,4 +1,5 @@
 import axios from "axios";
+import { GOOGLE_MAPS_API_KEY } from "../../envConfig.js";
 
 export async function calculateDistance(
   origin: { lat: number; lng: number },
@@ -10,7 +11,7 @@ export async function calculateDistance(
       params: {
         origins: `${origin.lat},${origin.lng}`,
         destinations: `${destination.lat},${destination.lng}`,
-        key: process.env.GOOGLE_MAPS_API_KEY,
+        key: GOOGLE_MAPS_API_KEY,
       },
     },
   );
