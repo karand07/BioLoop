@@ -10,6 +10,7 @@ import {
   wasteListingsRoute,
 } from "./modules/waste/waste.routes.js";
 import { requestRoute } from "./modules/order_request/orderReuest.routes.js";
+import { negotiationRouter } from "./modules/negotiation/negotiation.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -20,6 +21,6 @@ app.use("/company", companyRoute);
 app.use("/logistics", logisticsRoute);
 app.use("/wastecategory", wasteCategoryRoute);
 app.use("/wastelistings", wasteListingsRoute);
-app.use("/ordderrequest",requestRoute);
-
+app.use("/orderrequest", requestRoute);
+app.use("/negotiation", negotiationRouter);
 app.listen(port, () => console.log(`server is running on port ${port}`));
