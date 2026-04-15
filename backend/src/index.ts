@@ -9,6 +9,9 @@ import {
   wasteCategoryRoute,
   wasteListingsRoute,
 } from "./modules/waste/waste.routes.js";
+import { requestRoute } from "./modules/order_request/orderRequest.routes.js";
+import { negotiationRouter } from "./modules/negotiation/negotiation.routes.js";
+import { connectDB } from "./lib/prisma.js";
 
 const app = express();
 app.use(express.json());
@@ -19,5 +22,16 @@ app.use("/company", companyRoute);
 app.use("/logistics", logisticsRoute);
 app.use("/wastecategory", wasteCategoryRoute);
 app.use("/wastelistings", wasteListingsRoute);
+app.use("/orderrequest", requestRoute);
+app.use("/negotiation", negotiationRouter);
 
-app.listen(port, () => console.log(`server is running on port ${port}`));
+async function startServer() {
+  try {
+    await connectDB();
+    app.listen(port, () => console.log(`server is running on port ${port}`));
+  } catch (err) {
+    console.error("Failed to start server:", err);
+  }
+}
+
+startServer();  
