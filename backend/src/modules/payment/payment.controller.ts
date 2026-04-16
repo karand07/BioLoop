@@ -1,5 +1,5 @@
 import { createPaymentSchema, verifyPaymentSchema } from "./payment.shemas.js";
-import { paymentServices } from "./paymet.services.js";
+import { paymentServices } from "./payment.services.js";
 import { Request, Response } from "express";
 
 class PaymentController {
