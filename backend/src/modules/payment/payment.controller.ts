@@ -23,7 +23,6 @@ class PaymentController {
   };
 
   verifyPayment = async (req: Request, res: Response) => {
-    const userId = req.user?.id;
     const result = verifyPaymentSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({
@@ -31,7 +30,7 @@ class PaymentController {
         error: result.error.issues,
       });
     }
-    const payment = await paymentServices.verifyPayment(result.data, userId!);
+    const payment = await paymentServices.verifyPayment(result.data);
     return res.status(200).json({
       message: "Payment verified successfully",
       data: payment,

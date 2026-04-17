@@ -1,6 +1,7 @@
 import { razorpay } from "../../envConfig.js";
 import { prisma } from "../../lib/prisma.js";
 import { verifyPaymentType } from "./payment.shemas.js";
+import crypto from "crypto";
 
 class PaymetServices {
   async createPaymentOrder(order_id: number, userId: number) {
@@ -50,13 +51,10 @@ class PaymetServices {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
-    }: verifyPaymentType,
-    userId: number,
+    }: verifyPaymentType
   ) {
-    // verify signature
-    const crypto = require("crypto");
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET as string)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
