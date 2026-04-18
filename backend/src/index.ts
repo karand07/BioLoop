@@ -15,6 +15,7 @@ import { connectDB } from "./lib/prisma.js";
 import { orderRouter } from "./modules/order/order.routes.js";
 import { paymentRouter } from "./modules/payment/payment.routes.js";
 import { pickupRouter } from "./modules/pickupSchedule/pickupschedule.routes.js";
+import { payoutRouter } from "./modules/payouts/payout.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -30,7 +31,7 @@ app.use("/negotiation", negotiationRouter);
 app.use("/order", orderRouter);
 app.use("/payment", paymentRouter);
 app.use("/pickup", pickupRouter);
-
+app.use("/payout", payoutRouter);
 async function startServer() {
   try {
     await connectDB();
