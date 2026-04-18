@@ -16,6 +16,8 @@ import { orderRouter } from "./modules/order/order.routes.js";
 import { paymentRouter } from "./modules/payment/payment.routes.js";
 import { pickupRouter } from "./modules/pickupSchedule/pickupschedule.routes.js";
 import { payoutRouter } from "./modules/payouts/payout.routes.js";
+import { notificationRouter } from "./modules/notifications/notifications.routes.js";
+import { adminRouter } from "./modules/admin/admin.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -32,6 +34,8 @@ app.use("/order", orderRouter);
 app.use("/payment", paymentRouter);
 app.use("/pickup", pickupRouter);
 app.use("/payout", payoutRouter);
+app.use("/notification",notificationRouter);
+app.use("/admin",adminRouter);
 async function startServer() {
   try {
     await connectDB();
