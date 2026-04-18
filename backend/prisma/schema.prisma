@@ -110,6 +110,9 @@ model Users{
   latitude        Decimal @db.Decimal(9, 6)
   longitude       Decimal @db.Decimal(9, 6)
   land_size_acres Decimal @db.Decimal(10, 2)
+  account_number String?
+  ifsc           String?
+  bank_name      String?
 
   user Users @relation(fields: [farmer_id], references: [id])
   listings       Waste_Listings[]
@@ -138,6 +141,9 @@ model LogisticsProfile {
   vehicle_type   VehicleType
   vehicle_number String
   service_area   String
+  account_number String?
+  ifsc           String?
+  bank_name      String?
 
   user Users @relation(fields: [logistics_id], references: [id])
   pickup_schedules Pickup_Schedule[]
