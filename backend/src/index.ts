@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
-import { port } from "./envConfig.js";
+import { corsOrigin, port } from "./envConfig.js";
+import cors from "cors";
 import { userRoute } from "./modules/user/user.routes.js";
 import { farmerRoute } from "./modules/farmer/farmer.routes.js";
 import { companyRoute } from "./modules/company/company.routes.js";
@@ -36,6 +37,12 @@ app.use("/pickup", pickupRouter);
 app.use("/payout", payoutRouter);
 app.use("/notification",notificationRouter);
 app.use("/admin",adminRouter);
+
+app.use(cors({
+  origin: corsOrigin,
+  credentials: true
+}));
+
 async function startServer() {
   try {
     await connectDB();
