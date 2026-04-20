@@ -1,1 +1,41 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #065f46; /* Emerald 800 */
+  --color-primary-foreground: #ecfdf5; /* Emerald 50 */
+  --color-secondary: #fef3c7; /* Amber 100 */
+  --color-secondary-foreground: #92400e; /* Amber 800 */
+  --color-accent: #10b981; /* Emerald 500 */
+  --color-background: #f8fafc; /* Slate 50 */
+  --color-foreground: #0f172a; /* Slate 900 */
+  --color-muted: #f1f5f9; /* Slate 100 */
+  --color-muted-foreground: #64748b; /* Slate 500 */
+  --color-border: #e2e8f0; /* Slate 200 */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: 'Inter Variable', sans-serif;
+  }
+}
+
+.eco-gradient {
+  background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+}
+
+.eco-card {
+  border-radius: 1rem;
+  border-width: 1px;
+  border-color: #e2e8f0;
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition-property: box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.eco-card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
