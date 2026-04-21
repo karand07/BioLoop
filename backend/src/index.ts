@@ -23,6 +23,11 @@ import { adminRouter } from "./modules/admin/admin.routes.js";
 const app = express();
 app.use(express.json());
 
+app.use(cors({
+  origin: corsOrigin,
+  credentials: true
+}));
+
 app.use("/user", userRoute);
 app.use("/farmer", farmerRoute);
 app.use("/company", companyRoute);
@@ -37,11 +42,6 @@ app.use("/pickup", pickupRouter);
 app.use("/payout", payoutRouter);
 app.use("/notification",notificationRouter);
 app.use("/admin",adminRouter);
-
-app.use(cors({
-  origin: corsOrigin,
-  credentials: true
-}));
 
 async function startServer() {
   try {

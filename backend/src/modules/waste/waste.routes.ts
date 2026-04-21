@@ -10,6 +10,8 @@ import {
 } from "../../middleware/auth.middleware.js";
 import upload from "../utils/multer.js";
 const wasteCategoryRoute = Router();
+ 
+wasteCategoryRoute.get("/", wasteCategoryController.getAll);
 
 wasteCategoryRoute.post(
   "/create",
@@ -56,5 +58,9 @@ wasteListingsRoute.put(
   isFarmer,
   wasteListingController.delete,
 );
+
+wasteListingsRoute.get("/my", authenticate, isFarmer, wasteListingController.getMyListings);
+wasteListingsRoute.get("/:listing_id", wasteListingController.getById);
+wasteListingsRoute.get("/", wasteListingController.getAllActive);
 
 export { wasteCategoryRoute, wasteListingsRoute };

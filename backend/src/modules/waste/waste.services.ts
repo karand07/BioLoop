@@ -78,6 +78,14 @@ class WasteCategoryServices {
 
     return deleteCategory;
   }
+
+  async getAll() {
+    return await prisma.waste_Category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+  }
 }
 
 class WasteListingsServices {
@@ -136,6 +144,46 @@ class WasteListingsServices {
     });
 
     return deactivated;
+  }
+
+  async getById(listing_id: number) {
+    return await prisma.waste_Listings.findUnique({
+      where: {
+        listing_id,
+      },
+      include: {
+        category: true,
+      },
+    });
+  }
+
+  async getMyListings(farmer_id: number) {
+    return await prisma.waste_Listings.findMany({
+      where: {
+        farmer_id,
+      },
+      include: {
+        category: true,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+  }
+
+  async getAllActive() {
+    return await prisma.waste_Listings.findMany({
+      where: {
+        status: "active",
+      },
+      include: {
+        category: true,
+        farmer: true,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
   }
 }
 
