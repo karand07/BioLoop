@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, Mail, Lock, Phone, UserCircle, ArrowRight, Loader2, Check } from 'lucide-react';
+import { Leaf, Mail, Lock, Phone, ArrowRight, Loader2, Check } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
