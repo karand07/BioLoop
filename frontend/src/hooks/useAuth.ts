@@ -42,9 +42,29 @@ export const useAuth = () => {
     },
   });
 
+  const onboardCompanyMutation = useMutation({
+    mutationFn: async (formData: any) => {
+      const response = await api.post('/company/create', formData);
+      return response.data;
+    },
+    onSuccess: () => {
+      navigate('/company/marketplace');
+    },
+  });
+
   const updateFarmerMutation = useMutation({
     mutationFn: async (formData: any) => {
       const response = await api.put('/farmer/update', formData);
+      return response.data;
+    },
+    onSuccess: () => {
+      userQuery.refetch();
+    },
+  });
+
+  const updateCompanyMutation = useMutation({
+    mutationFn: async (formData: any) => {
+      const response = await api.put('/company/update', formData);
       return response.data;
     },
     onSuccess: () => {
@@ -71,10 +91,12 @@ export const useAuth = () => {
     login: loginMutation.mutate,
     signup: signupMutation.mutate,
     onboardFarmer: onboardFarmerMutation.mutate,
+    onboardCompany: onboardCompanyMutation.mutate,
     updateFarmerProfile: updateFarmerMutation.mutate,
+    updateCompanyProfile: updateCompanyMutation.mutate,
     user: userQuery.data,
-    isLoading: loginMutation.isPending || signupMutation.isPending || onboardFarmerMutation.isPending || updateFarmerMutation.isPending || userQuery.isLoading,
-    error: loginMutation.error || signupMutation.error || onboardFarmerMutation.error || updateFarmerMutation.error,
+    isLoading: loginMutation.isPending || signupMutation.isPending || onboardFarmerMutation.isPending || onboardCompanyMutation.isPending || updateFarmerMutation.isPending || updateCompanyMutation.isPending || userQuery.isLoading,
+    error: loginMutation.error || signupMutation.error || onboardFarmerMutation.error || onboardCompanyMutation.error || updateFarmerMutation.error || updateCompanyMutation.error,
     logout,
   };
 };

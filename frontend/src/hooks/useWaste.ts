@@ -49,6 +49,14 @@ export const useWaste = () => {
     },
   });
 
+  const getAllListingsQuery = useQuery({
+    queryKey: ['all-listings'],
+    queryFn: async () => {
+      const response = await api.get('/wastelistings');
+      return response.data.data;
+    },
+  });
+ 
   const getMyListingsQuery = useQuery({
     queryKey: ['my-listings'],
     queryFn: async () => {
@@ -77,8 +85,10 @@ export const useWaste = () => {
     deleteListing: deleteListingMutation.mutate,
     isDeleting: deleteListingMutation.isPending,
     myListings: getMyListingsQuery.data || [],
-    isListingsLoading: getMyListingsQuery.isLoading,
+    listings: getAllListingsQuery.data || [],
+    isListingsLoading: getMyListingsQuery.isLoading || getAllListingsQuery.isLoading,
     refetchListings: getMyListingsQuery.refetch,
+    refetchAllListings: getAllListingsQuery.refetch,
     getListingById: getListingByIdQuery,
   };
 };

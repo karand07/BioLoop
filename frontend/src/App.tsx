@@ -7,6 +7,15 @@ import FarmerListings from './pages/farmer/Listings';
 import FarmerRequests from './pages/farmer/Requests';
 import FarmerOrders from './pages/farmer/Orders';
 import FarmerProfile from './pages/farmer/Profile';
+
+
+import CompanyLayout from './components/layouts/CompanyLayout';
+import CompanyDashboard from './pages/company/Dashboard';
+import CompanyMarketplace from './pages/company/Marketplace';
+import CompanyRequests from './pages/company/Requests';
+import CompanyOrders from './pages/company/Orders';
+import CompanyProfile from './pages/company/Profile';
+
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -34,6 +43,18 @@ function App() {
             <Route path="/farmer/orders" element={<FarmerOrders />} />
             <Route path="/farmer/profile" element={<FarmerProfile />} />
             <Route path="/farmer/onboarding" element={<FarmerProfile />} />
+          </Route>
+        </Route>
+
+        {/* Protected Company Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['company']} />}>
+          <Route element={<CompanyLayout />}>
+            <Route path="/company/dashboard" element={<CompanyDashboard />} />
+            <Route path="/company/marketplace" element={<CompanyMarketplace />} />
+            <Route path="/company/requests" element={<CompanyRequests />} />
+            <Route path="/company/orders" element={<CompanyOrders />} />
+            <Route path="/company/profile" element={<CompanyProfile />} />
+            <Route path="/company/onboarding" element={<CompanyProfile />} />
           </Route>
         </Route>
         
