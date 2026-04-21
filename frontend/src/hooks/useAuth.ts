@@ -18,6 +18,7 @@ export const useAuth = () => {
       if (data.role === 'farmer') navigate('/farmer/dashboard');
       else if (data.role === 'company') navigate('/company/dashboard');
       else if (data.role === 'logistics') navigate('/logistics/dashboard');
+      else if (data.role === 'admin') navigate('/admin/dashboard');
       else navigate('/');
     },
   });

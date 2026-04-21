@@ -1,4 +1,5 @@
-import { ShoppingBag,IndianRupee, Truck,  Loader2, Building2, MapPin } from 'lucide-react';
+import  { useState } from 'react';
+import { ShoppingBag, IndianRupee, Truck, Loader2, Building2, MapPin, Clock, CheckCircle2, Calendar, X } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { cn } from '../../lib/utils';
 
@@ -10,10 +11,16 @@ const orderStatusColors: Record<string, string> = {
 };
 
 export default function CompanyOrders() {
-  const { orders, isOrdersLoading } = useOrders();
+  const { orders, isOrdersLoading, confirmSlot, isConfirming } = useOrders();
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+  const handleConfirm = (slot: string) => {
+    confirmSlot({ orderId: selectedOrder.order_id, slot });
+    setSelectedOrder(null);
+  };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       <div>
         <h1 className="text-3xl font-bold text-slate-900">My Orders</h1>
         <p className="text-slate-500 mt-1">Manage and track your active purchases.</p>
@@ -62,6 +69,34 @@ export default function CompanyOrders() {
                         <span className="text-sm font-medium">{order.farmer?.city}, {order.farmer?.state}</span>
                       </div>
                     </div>
+
+                    {order.pickup_schedule && order.pickup_schedule.status === 'pending' && (
+                       <div className="mt-6 bg-amber-50 p-6 rounded-3xl border border-amber-100">
+                          <h4 className="text-sm font-black text-amber-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                             <Clock className="w-4 h-4" />
+                             Action Required: Confirm Pickup
+                          </h4>
+                          <p className="text-xs text-amber-700 mb-4">The farmer has proposed slots. Please select one to enable logistics.</p>
+                          <button 
+                            onClick={() => setSelectedOrder(order)}
+                            className="w-full bg-amber-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-amber-700 transition-all"
+                          >
+                             Review Proposed Slots
+                          </button>
+                       </div>
+                    )}
+
+                    {order.pickup_schedule?.status === 'confirmed' && (
+                       <div className="mt-6 bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
+                          <h4 className="text-sm font-black text-emerald-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                             <CheckCircle2 className="w-4 h-4" />
+                             Pickup Scheduled
+                          </h4>
+                          <p className="text-xs text-emerald-700 font-bold">
+                             Confirmed for: {new Date(order.pickup_schedule.confirmed_slot).toLocaleString()}
+                          </p>
+                       </div>
+                    )}
                   </div>
                 </div>
 
@@ -105,6 +140,53 @@ export default function CompanyOrders() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Select Slot Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+            <button 
+              onClick={() => setSelectedOrder(null)}
+              className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-xl transition-colors z-10"
+            >
+              <X className="w-6 h-6 text-slate-400" />
+            </button>
+
+            <div className="p-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600">
+                  <Calendar className="w-8 h-8" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Select Slot</h2>
+                  <p className="text-slate-500">Pick a time for the pickup.</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {selectedOrder.pickup_schedule?.proposed_slots.map((slot: string, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => handleConfirm(slot)}
+                    disabled={isConfirming}
+                    className="w-full p-6 text-left border-2 border-slate-100 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50 transition-all group flex items-center justify-between"
+                  >
+                    <div>
+                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Option {index + 1}</p>
+                       <p className="font-bold text-slate-700">{new Date(slot).toLocaleString()}</p>
+                    </div>
+                    <CheckCircle2 className="w-6 h-6 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-8 bg-slate-50 p-4 rounded-2xl text-xs text-slate-500 leading-relaxed italic">
+                 Once confirmed, this order will be visible to our logistics partners for pickup.
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

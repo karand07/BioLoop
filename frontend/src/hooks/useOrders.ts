@@ -49,6 +49,26 @@ export const useOrders = () => {
     },
   });
 
+  const proposeSlotsMutation = useMutation({
+    mutationFn: async ({ orderId, slots }: { orderId: number; slots: string[] }) => {
+      const response = await api.post('/pickupschedule/propose', { order_id: orderId, proposed_slots: slots });
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
+  const confirmSlotMutation = useMutation({
+    mutationFn: async ({ orderId, slot }: { orderId: number; slot: string }) => {
+      const response = await api.patch(`/pickupschedule/${orderId}/confirm`, { confirmed_slot: slot });
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
   return {
     orders: myOrdersQuery.data || [],
     isOrdersLoading: myOrdersQuery.isLoading,
@@ -60,6 +80,10 @@ export const useOrders = () => {
     isCreatingRequest: createRequestMutation.isPending,
     respondToRequest: respondToRequestMutation.mutate,
     isResponding: respondToRequestMutation.isPending,
+    proposeSlots: proposeSlotsMutation.mutate,
+    isProposing: proposeSlotsMutation.isPending,
+    confirmSlot: confirmSlotMutation.mutate,
+    isConfirming: confirmSlotMutation.isPending,
     refetchOrders: myOrdersQuery.refetch,
     refetchRequests: getIncomingRequestsQuery.refetch,
     refetchMyRequests: getMyRequestsQuery.refetch,
