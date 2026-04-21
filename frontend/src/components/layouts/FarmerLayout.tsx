@@ -1,15 +1,20 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, List, User, LogOut, Leaf } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, List, MessageSquare, ShoppingBag, LogOut, Leaf, User } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
 const navItems = [
   { name: 'Dashboard', href: '/farmer/dashboard', icon: LayoutDashboard },
   { name: 'Create Listing', href: '/farmer/create-listing', icon: PlusCircle },
   { name: 'My Listings', href: '/farmer/listings', icon: List },
+  { name: 'Requests', href: '/farmer/requests', icon: MessageSquare },
+  { name: 'Orders', href: '/farmer/orders', icon: ShoppingBag },
+  { name: 'Profile', href: '/farmer/profile', icon: User },
 ];
 
 export default function FarmerLayout() {
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -22,7 +27,7 @@ export default function FarmerLayout() {
           <span className="text-2xl font-bold tracking-tight">BioLoop</span>
         </div>
 
-        <nav className="flex-1 px-4 py-4 space-y-2">
+        <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
@@ -48,15 +53,18 @@ export default function FarmerLayout() {
 
         <div className="p-4 border-t border-emerald-800">
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/50 transition-colors cursor-pointer group">
-            <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center text-sm font-bold">
-              K
+            <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center text-xs font-bold shrink-0">
+              {user?.farmer_profile?.farm_name?.charAt(0) || 'F'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Karan Farmer</p>
-              <p className="text-xs text-emerald-100/50 truncate">farmer@example.com</p>
+              <p className="text-sm font-medium truncate">{user?.farmer_profile?.farm_name || 'Loading...'}</p>
+              <p className="text-xs text-emerald-100/50 truncate">{user?.email}</p>
             </div>
           </div>
-          <button className="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-emerald-100/50 hover:text-white hover:bg-red-500/10 transition-colors group">
+          <button 
+            onClick={logout}
+            className="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-emerald-100/50 hover:text-white hover:bg-red-500/10 transition-colors group"
+          >
             <LogOut className="w-5 h-5 group-hover:text-red-400" />
             <span className="font-medium">Logout</span>
           </button>

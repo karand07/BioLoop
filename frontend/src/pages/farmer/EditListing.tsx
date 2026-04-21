@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check, ArrowLeft } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
 import { cn } from '../../lib/utils';
 
-export default function CreateListing() {
-  const { categories, createListing, isCreating, createError } = useWaste();
+export default function EditListing() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { categories, updateListing, isUpdating, getListingById } = useWaste();
+  
+  const { data: listing, isLoading: isFetching } = getListingById(Number(id));
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
@@ -13,8 +19,21 @@ export default function CreateListing() {
     quantity: '',
     asking_price: '',
     description: '',
-    available_from: new Date().toISOString().split('T')[0],
+    available_from: '',
   });
+
+  useEffect(() => {
+    if (listing) {
+      setFormData({
+        category_id: listing.category_id.toString(),
+        quantity: listing.quantity.toString(),
+        asking_price: listing.asking_price.toString(),
+        description: listing.description || '',
+        available_from: new Date(listing.available_from).toISOString().split('T')[0],
+      });
+      setImagePreview(listing.images);
+    }
+  }, [listing]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,25 +49,38 @@ export default function CreateListing() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
 
     const data = new FormData();
-    data.append('file', file);
+    if (file) data.append('file', file);
     data.append('category_id', formData.category_id);
     data.append('quantity', formData.quantity);
     data.append('asking_price', formData.asking_price);
     data.append('description', formData.description);
     data.append('available_from', formData.available_from);
 
-    createListing(data);
+    updateListing({ id: Number(id), formData: data });
   };
+
+  if (isFetching) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center gap-4 mb-8">
+        <button 
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+        >
+          <ArrowLeft className="w-6 h-6 text-slate-600" />
+        </button>
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Create New Listing</h1>
-          <p className="text-slate-500 mt-1">List your bio-waste for companies to discover and purchase.</p>
+          <h1 className="text-3xl font-bold text-slate-900">Edit Listing</h1>
+          <p className="text-slate-500 mt-1">Update your waste listing details.</p>
         </div>
       </div>
 
@@ -81,8 +113,7 @@ export default function CreateListing() {
                   <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 text-emerald-500 group-hover:scale-110 transition-transform">
                     <Camera className="w-8 h-8" />
                   </div>
-                  <p className="text-sm font-medium text-slate-600">Click to upload or drag & drop</p>
-                  <p className="text-xs text-slate-400 mt-1">JPG, PNG up to 5MB</p>
+                  <p className="text-sm font-medium text-slate-600">Click to upload</p>
                 </div>
               )}
               <input 
@@ -90,7 +121,6 @@ export default function CreateListing() {
                 accept="image/*" 
                 onChange={handleImageChange}
                 className="absolute inset-0 opacity-0 cursor-pointer"
-                required={!imagePreview}
               />
             </div>
           </div>
@@ -112,7 +142,7 @@ export default function CreateListing() {
                     type="button"
                     onClick={() => setFormData({ ...formData, category_id: cat.category_id.toString() })}
                     className={cn(
-                      "px-4 py-3 rounded-xl border-2 text-left transition-all",
+                      "px-4 py-3 rounded-xl border-2 text-left transition-all relative",
                       formData.category_id === cat.category_id.toString()
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm"
                         : "border-slate-100 bg-slate-50 text-slate-600 hover:border-emerald-200"
@@ -125,11 +155,6 @@ export default function CreateListing() {
                     )}
                   </button>
                 ))}
-                {categories.length === 0 && (
-                  <div className="col-span-2 py-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
-                    No categories found. Please contact admin.
-                  </div>
-                )}
               </div>
             </div>
 
@@ -145,7 +170,6 @@ export default function CreateListing() {
                     value={formData.quantity}
                     onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
-                    placeholder="0.00"
                   />
                 </div>
               </div>
@@ -161,7 +185,6 @@ export default function CreateListing() {
                     value={formData.asking_price}
                     onChange={(e) => setFormData({ ...formData, asking_price: e.target.value })}
                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
-                    placeholder="0.00"
                   />
                 </div>
               </div>
@@ -192,26 +215,19 @@ export default function CreateListing() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none min-h-[120px]"
-                placeholder="Details about quality, type, and collection instructions..."
               />
             </div>
 
-            {createError && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium border border-red-100">
-                {(createError as any).response?.data?.message || 'Failed to create listing. Please try again.'}
-              </div>
-            )}
-
             <button
               type="submit"
-              disabled={isCreating}
+              disabled={isUpdating}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              {isCreating ? (
+              {isUpdating ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  Post Listing
+                  Save Changes
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
