@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 
@@ -32,6 +32,35 @@ export const useAuth = () => {
     },
   });
 
+  const onboardFarmerMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/farmer/create', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      navigate('/farmer/dashboard');
+    },
+  });
+
+  const updateFarmerMutation = useMutation({
+    mutationFn: async (formData: any) => {
+      const response = await api.put('/farmer/update', formData);
+      return response.data;
+    },
+    onSuccess: () => {
+      userQuery.refetch();
+    },
+  });
+
+  const userQuery = useQuery({
+    queryKey: ['me'],
+    queryFn: async () => {
+      const response = await api.get('/user/me');
+      return response.data.data;
+    },
+    enabled: !!localStorage.getItem('token'),
+  });
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
@@ -41,8 +70,11 @@ export const useAuth = () => {
   return {
     login: loginMutation.mutate,
     signup: signupMutation.mutate,
-    isLoading: loginMutation.isPending || signupMutation.isPending,
-    error: loginMutation.error || signupMutation.error,
+    onboardFarmer: onboardFarmerMutation.mutate,
+    updateFarmerProfile: updateFarmerMutation.mutate,
+    user: userQuery.data,
+    isLoading: loginMutation.isPending || signupMutation.isPending || onboardFarmerMutation.isPending || updateFarmerMutation.isPending || userQuery.isLoading,
+    error: loginMutation.error || signupMutation.error || onboardFarmerMutation.error || updateFarmerMutation.error,
     logout,
   };
 };

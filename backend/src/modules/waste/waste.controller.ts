@@ -95,6 +95,21 @@ class WasteCategoryController {
       });
     }
   };
+
+  getAll = async (req: Request, res: Response) => {
+    try {
+      const categories = await wasteCategoryServices.getAll();
+      return res.status(200).json({
+        message: "Categories fetched successfully",
+        data: categories,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message:
+          error instanceof Error ? error.message : "Unknown error occured",
+      });
+    }
+  };
 }
 
 class WasteListingsController {
@@ -158,7 +173,7 @@ class WasteListingsController {
 
       const Imgurl = req.file?.path;
 
-      if (!Imgurl) {
+      if (Imgurl) {
         result.data.images = Imgurl;
       }
 
@@ -179,6 +194,27 @@ class WasteListingsController {
     }
   };
 
+  getById = async (req: Request, res: Response) => {
+    try {
+      const listing_id = Number(req.params.listing_id);
+      if (isNaN(listing_id)) {
+        return res.status(400).json({ message: "Invalid ID" });
+      }
+      const listing = await wasteListingServices.getById(listing_id);
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found" });
+      }
+      return res.status(200).json({
+        message: "Listing fetched successfully",
+        data: listing,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error instanceof Error ? error.message : "Unknown error occured",
+      });
+    }
+  };
+
   delete = async (req: Request, res: Response) => {
     try {
       const listing_id = Number(req.params.listing_id);
@@ -194,6 +230,40 @@ class WasteListingsController {
       return res.status(200).json({
         message: "waste listing deactivated",
         data: deleted,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message:
+          error instanceof Error ? error.message : "Unknown error occured",
+      });
+    }
+  };
+
+  getMyListings = async (req: Request, res: Response) => {
+    try {
+      const farmer_id = req.user?.id;
+      if (!farmer_id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      const listings = await wasteListingServices.getMyListings(farmer_id);
+      return res.status(200).json({
+        message: "Your listings fetched successfully",
+        data: listings,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message:
+          error instanceof Error ? error.message : "Unknown error occured",
+      });
+    }
+  };
+
+  getAllActive = async (req: Request, res: Response) => {
+    try {
+      const listings = await wasteListingServices.getAllActive();
+      return res.status(200).json({
+        message: "Active listings fetched successfully",
+        data: listings,
       });
     } catch (error) {
       return res.status(500).json({

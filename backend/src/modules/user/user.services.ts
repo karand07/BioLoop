@@ -65,6 +65,18 @@ class UserServices {
     }
     return { token, role: is_userExist.role };
   }
+
+  async getMe(userId: number) {
+    const user = await prisma.users.findUnique({
+      where: { id: Number(userId) },
+      include: {
+        farmer_profile: true,
+        company_profile: true,
+        logistics_profile: true,
+      },
+    });
+    return user;
+  }
 }
 
 export const userServices = new UserServices();
