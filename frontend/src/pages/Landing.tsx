@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, ArrowRight, ShieldCheck, Truck, BarChart3, Globe, Zap, CheckCircle2, ChevronRight, Menu, X, Factory, Sprout } from 'lucide-react';
+import { Leaf, ArrowRight,  BarChart3,  Zap, CheckCircle2,  Menu, X, Factory, Sprout } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export default function Landing() {

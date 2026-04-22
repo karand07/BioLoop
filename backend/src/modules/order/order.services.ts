@@ -48,6 +48,7 @@ class OrderServices {
   async confirmDelivery(order_id: number, userId: number) {
     const order = await prisma.order.findUnique({
       where: { order_id },
+      include: { pickup_schedule: true },
     });
     if (!order) {
       throw new Error("Order not found");
@@ -86,7 +87,7 @@ class OrderServices {
         data: {
           order_id,
           recipient_type: "logistics",
-          recipient_id: order.farmer_id, // logistics id comes from pickup_schedule
+          recipient_id: order.pickup_schedule?.logistics_id || 0,
           amount: order.delivery_cost,
           status: "pending",
         },

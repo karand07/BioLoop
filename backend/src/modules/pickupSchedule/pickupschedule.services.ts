@@ -166,6 +166,66 @@ async getPickupDetails(order_id: number, userId: number) {
   }
   return schedule;
 }
+
+async getAvailablePickups() {
+  return await prisma.pickup_Schedule.findMany({
+    where: {
+      logistics_id: 0,
+      status: "confirmed" // only show if company confirmed the slot
+    },
+    include: {
+      order: {
+        include: {
+          request: {
+            include: {
+              listing: {
+                include: {
+                  category: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+async claimPickup(order_id: number, userId: number) {
+  const existing = await prisma.pickup_Schedule.findUnique({
+    where: { order_id }
+  });
+  if (!existing || existing.logistics_id !== 0) {
+    throw new Error("Shipment not available or already claimed");
+  }
+  return await prisma.pickup_Schedule.update({
+    where: { order_id },
+    data: { logistics_id: userId }
+  });
+}
+
+async getMyPickups(userId: number) {
+  return await prisma.pickup_Schedule.findMany({
+    where: { logistics_id: userId },
+    include: {
+      order: {
+        include: {
+          request: {
+            include: {
+              listing: {
+                include: {
+                  category: true
+                }
+              }
+            }
+          },
+          farmer: true,
+          company: true
+        }
+      }
+    }
+  });
+}
 }
 
 export const pickupScheduleServices = new PickupScheduleServices();

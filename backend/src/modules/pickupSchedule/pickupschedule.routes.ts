@@ -7,6 +7,9 @@ pickupRouter.post("/propose", authenticate,  isFarmer, pickupScheduleControllerI
 pickupRouter.patch("/:order_id/confirm", authenticate,  isCompany, pickupScheduleControllerInstance.confirmSlot);
 pickupRouter.patch("/:order_id/picked-up", authenticate, isLogistics, pickupScheduleControllerInstance.markPickedUp);
 pickupRouter.patch("/:order_id/delivered", authenticate,  isLogistics, pickupScheduleControllerInstance.markDelivered);
+pickupRouter.get("/available", authenticate, isLogistics, pickupScheduleControllerInstance.getAvailablePickups);
+pickupRouter.post("/:order_id/claim", authenticate, isLogistics, pickupScheduleControllerInstance.claimPickup);
+pickupRouter.get("/my", authenticate, isLogistics, pickupScheduleControllerInstance.getMyPickups);
 pickupRouter.get("/:order_id", authenticate,  pickupScheduleControllerInstance.getPickupDetails);
 
 export { pickupRouter };
