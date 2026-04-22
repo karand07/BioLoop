@@ -114,7 +114,7 @@ class NegotiationServices {
     const deliveryCost = baseCharge + distanceKm * ratePerKm;
     const platformCommission = Number(lastOffer.proposed_price) * 0.03; // 3%
     const totalAmount =
-      Number(lastOffer.proposed_price) + deliveryCost + platformCommission;
+      Number(lastOffer.proposed_price) * Number(request.requested_quantity) + deliveryCost + platformCommission;
 
     // create order + update request status in one transaction
     const [order] = await prisma.$transaction([

@@ -143,6 +143,100 @@ class RequestServices {
     return updated;
   }
 
+  async respond(request_id: number, userId: number, status: 'accepted' | 'rejected' | 'negotiated', negotiated_price?: number) {
+    const request = await prisma.order_Request.findUnique({
+      where: { request_id },
+      include: { listing: true }
+    });
+
+    if (!request) throw new Error("Request not found");
+    if (request.farmer_id !== userId) throw new Error("Unauthorized");
+    if (request.status !== "pending" && request.status !== "negotiating") throw new Error("Request is no longer in a valid state for response");
+
+    if (status === 'rejected') {
+      return await prisma.order_Request.update({
+        where: { request_id },
+        data: { status: 'rejected', is_active: false }
+      });
+    }
+
+    if (status === 'negotiated') {
+      return await prisma.$transaction(async (tx) => {
+        const updatedRequest = await tx.order_Request.update({
+          where: { request_id },
+          data: { status: 'negotiating', offered_price: negotiated_price || request.offered_price }
+        });
+
+        await tx.negotiation.create({
+          data: {
+            request_id,
+            proposed_price: negotiated_price || request.offered_price,
+            proposed_by: 'farmer',
+            message: 'Farmer started negotiation'
+          }
+        });
+
+        return updatedRequest;
+      });
+    }
+
+    if (status === 'accepted') {
+      // Calculate order details
+      const farmer = await prisma.farmerProfile.findUnique({ where: { farmer_id: request.farmer_id } });
+      const company = await prisma.companyProfile.findUnique({ where: { company_id: request.company_id } });
+
+      const { calculateDistance } = await import("../utils/calculateDistance.js");
+      const distanceKm = await calculateDistance(
+        { lat: Number(farmer!.latitude), lng: Number(farmer!.longitude) },
+        { lat: Number(company!.latitude), lng: Number(company!.longitude) }
+      );
+
+      const ratePerKm = 15;
+      const baseCharge = 200;
+      const deliveryCost = baseCharge + distanceKm * ratePerKm;
+      const finalPrice = negotiated_price || request.offered_price;
+      const platformCommission = Number(finalPrice) * 0.03;
+      const totalAmount = Number(finalPrice) * Number(request.requested_quantity) + deliveryCost + platformCommission;
+
+      return await prisma.$transaction(async (tx) => {
+        // 1. Create Order
+        const order = await tx.order.create({
+          data: {
+            request_id,
+            farmer_id: request.farmer_id,
+            company_id: request.company_id,
+            final_price: finalPrice,
+            quantity: request.requested_quantity,
+            delivery_cost: deliveryCost,
+            platform_commission: platformCommission,
+            total_amount: totalAmount,
+            status: 'confirmed'
+          }
+        });
+
+        // 2. Update Request
+        await tx.order_Request.update({
+          where: { request_id },
+          data: { status: 'accepted', is_active: false }
+        });
+
+        // 3. Mark Listing as Sold
+        await tx.waste_Listings.update({
+          where: { listing_id: request.listing_id },
+          data: { status: 'sold' }
+        });
+
+        // 4. Reject other requests
+        await tx.order_Request.updateMany({
+          where: { listing_id: request.listing_id, request_id: { not: request_id } },
+          data: { status: 'auto_rejected', is_active: false }
+        });
+
+        return order;
+      });
+    }
+  }
+
   async getRequestById(request_id: number, userId: number) {
     const request = await prisma.order_Request.findUnique({
       where: { request_id },

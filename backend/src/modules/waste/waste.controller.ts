@@ -173,12 +173,8 @@ class WasteListingsController {
 
       const Imgurl = req.file?.path;
 
-      if (Imgurl) {
-        result.data.images = Imgurl;
-      }
-
       const listing = await wasteListingServices.update(
-        result.data,
+        { ...result.data, ...(Imgurl ? { images: Imgurl } : {}) },
         listing_id,
       );
 

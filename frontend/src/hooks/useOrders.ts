@@ -1,13 +1,18 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
+import { useAuth } from './useAuth';
 
 export const useOrders = () => {
+  const { user } = useAuth();
+  const userRole = user?.role;
+
   const myOrdersQuery = useQuery({
     queryKey: ['my-orders'],
     queryFn: async () => {
       const response = await api.get('/order/my');
       return response.data.data;
     },
+    enabled: !!user,
   });
 
   const getIncomingRequestsQuery = useQuery({
@@ -16,6 +21,7 @@ export const useOrders = () => {
       const response = await api.get('/orderrequest/incoming');
       return response.data.data;
     },
+    enabled: userRole === 'farmer',
   });
 
   const getMyRequestsQuery = useQuery({
@@ -24,6 +30,7 @@ export const useOrders = () => {
       const response = await api.get('/orderrequest/my');
       return response.data.data;
     },
+    enabled: userRole === 'company',
   });
 
   const respondToRequestMutation = useMutation({
