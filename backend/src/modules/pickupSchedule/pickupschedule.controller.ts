@@ -73,6 +73,33 @@ getPickupDetails = async (req: Request, res: Response) => {
     data: schedule,
   });
 };
+
+getAvailablePickups = async (req: Request, res: Response) => {
+  const pickups = await pickupScheduleServices.getAvailablePickups();
+  return res.status(200).json({
+    message: "Available pickups fetched successfully",
+    data: pickups,
+  });
+};
+
+claimPickup = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const order_id = Number(req.params.order_id);
+  const claim = await pickupScheduleServices.claimPickup(order_id, userId!);
+  return res.status(200).json({
+    message: "Pickup claimed successfully",
+    data: claim,
+  });
+};
+
+getMyPickups = async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const pickups = await pickupScheduleServices.getMyPickups(userId!);
+  return res.status(200).json({
+    message: "Your pickups fetched successfully",
+    data: pickups,
+  });
+};
 }
 
 export const pickupScheduleControllerInstance = new pickupScheduleController();

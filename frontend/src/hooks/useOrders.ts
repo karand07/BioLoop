@@ -18,6 +18,14 @@ export const useOrders = () => {
     },
   });
 
+  const getMyRequestsQuery = useQuery({
+    queryKey: ['my-requests'],
+    queryFn: async () => {
+      const response = await api.get('/orderrequest/my');
+      return response.data.data;
+    },
+  });
+
   const respondToRequestMutation = useMutation({
     mutationFn: async ({ requestId, action, negotiatedPrice }: { requestId: number; action: 'accepted' | 'rejected' | 'negotiated'; negotiatedPrice?: number }) => {
       const response = await api.patch(`/orderrequest/${requestId}/respond`, {
@@ -31,14 +39,53 @@ export const useOrders = () => {
     },
   });
 
+  const createRequestMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/orderrequest/create', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      getMyRequestsQuery.refetch();
+    },
+  });
+
+  const proposeSlotsMutation = useMutation({
+    mutationFn: async ({ orderId, slots }: { orderId: number; slots: string[] }) => {
+      const response = await api.post('/pickupschedule/propose', { order_id: orderId, proposed_slots: slots });
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
+  const confirmSlotMutation = useMutation({
+    mutationFn: async ({ orderId, slot }: { orderId: number; slot: string }) => {
+      const response = await api.patch(`/pickupschedule/${orderId}/confirm`, { confirmed_slot: slot });
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
   return {
     orders: myOrdersQuery.data || [],
     isOrdersLoading: myOrdersQuery.isLoading,
     incomingRequests: getIncomingRequestsQuery.data || [],
     isRequestsLoading: getIncomingRequestsQuery.isLoading,
+    myRequests: getMyRequestsQuery.data || [],
+    isMyRequestsLoading: getMyRequestsQuery.isLoading,
+    createRequest: createRequestMutation.mutate,
+    isCreatingRequest: createRequestMutation.isPending,
     respondToRequest: respondToRequestMutation.mutate,
     isResponding: respondToRequestMutation.isPending,
+    proposeSlots: proposeSlotsMutation.mutate,
+    isProposing: proposeSlotsMutation.isPending,
+    confirmSlot: confirmSlotMutation.mutate,
+    isConfirming: confirmSlotMutation.isPending,
     refetchOrders: myOrdersQuery.refetch,
     refetchRequests: getIncomingRequestsQuery.refetch,
+    refetchMyRequests: getMyRequestsQuery.refetch,
   };
 };

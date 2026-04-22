@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, error, user } = useAuth();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (user) {
+      if (user.role === 'farmer') navigate('/farmer/dashboard');
+      else if (user.role === 'company') navigate('/company/dashboard');
+      else if (user.role === 'logistics') navigate('/logistics/dashboard');
+      else if (user.role === 'admin') navigate('/admin/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
