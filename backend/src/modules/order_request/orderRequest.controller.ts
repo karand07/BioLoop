@@ -82,6 +82,22 @@ class RequestController {
     });
   };
 
+  respond = async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const request_id = Number(req.params.request_id);
+    const { status, negotiated_price } = req.body;
+    
+    if (isNaN(request_id)) {
+      return res.status(400).json({ message: "Invalid request id" });
+    }
+
+    const request = await requestServices.respond(request_id, userId!, status, negotiated_price);
+    return res.status(200).json({
+      message: `Request ${status} successfully`,
+      data: request,
+    });
+  };
+
   getRequestById = async (req: Request, res: Response) => {
     const userId = req.user?.id;
     const request_id = Number(req.params.request_id);

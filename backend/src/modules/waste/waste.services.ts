@@ -93,6 +93,7 @@ class WasteListingsServices {
     const listing = await prisma.waste_Listings.create({
       data: {
         ...data,
+        images: data.images as string,
         farmer_id,
       },
     });

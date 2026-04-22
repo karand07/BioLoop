@@ -1,6 +1,7 @@
 import { MessageSquare, IndianRupee, Package,  Clock, CheckCircle2, XCircle, AlertCircle, Loader2, Building2 } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { cn } from '../../lib/utils';
+import NegotiationBlock from '../../components/negotiation/NegotiationBlock';
 
 const statusConfig: Record<string, { color: string, icon: any, label: string }> = {
   pending: { color: 'bg-amber-50 text-amber-700 border-amber-100', icon: Clock, label: 'Pending Response' },
@@ -11,7 +12,7 @@ const statusConfig: Record<string, { color: string, icon: any, label: string }> 
 };
 
 export default function CompanyRequests() {
-  const { myRequests, isMyRequestsLoading } = useOrders();
+  const { myRequests, isMyRequestsLoading, refetchMyRequests } = useOrders();
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -91,6 +92,16 @@ export default function CompanyRequests() {
                         <p className="font-bold text-slate-900 text-lg">₹{(request.requested_quantity * request.offered_price).toFixed(2)}</p>
                       </div>
                     </div>
+
+                    {request.status === 'negotiating' && (
+                      <NegotiationBlock 
+                        requestId={request.request_id}
+                        currentPrice={request.offered_price}
+                        unit={request.listing?.category?.unit}
+                        role="company"
+                        onStatusUpdate={refetchMyRequests}
+                      />
+                    )}
 
                     {request.status === 'accepted' && (
                       <div className="bg-emerald-600 text-white p-4 rounded-2xl flex items-center justify-between">

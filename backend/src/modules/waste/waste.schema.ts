@@ -27,7 +27,7 @@ export const wasteListingsSchema = z.object({
   available_from: z.coerce.date(),
   category_id: z.coerce.number("Category ID must be a number").nonnegative(),
   status: z.enum(ListingStatus).default("active"),
-  images: z.string(),
+  images: z.string().optional(),
 });
 
 export type wasteListingsType = z.infer<typeof wasteListingsSchema>;

@@ -8,7 +8,7 @@ import { requestController } from "./orderRequest.controller.js";
 const requestRoute = Router();
 
 // company routes
-requestRoute.post("/", authenticate, isCompany, requestController.create);
+requestRoute.post("/create", authenticate, isCompany, requestController.create);
 requestRoute.get(
   "/my",
   authenticate,
@@ -28,6 +28,12 @@ requestRoute.get(
   authenticate,
   isFarmer,
   requestController.getIncomingRequests,
+);
+requestRoute.patch(
+  "/:request_id/respond",
+  authenticate,
+  isFarmer,
+  requestController.respond,
 );
 requestRoute.patch(
   "/:request_id/accept",

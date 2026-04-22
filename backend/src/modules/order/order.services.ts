@@ -78,7 +78,7 @@ class OrderServices {
           order_id,
           recipient_type: "farmer",
           recipient_id: order.farmer_id,
-          amount: order.final_price,
+          amount: Number(order.final_price) * Number(order.quantity),
           status: "pending",
         },
       }),

@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { useMemo } from 'react';
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ export const useAuth = () => {
     navigate('/login');
   };
 
-  return {
+  return useMemo(() => ({
     login: loginMutation.mutate,
     signup: signupMutation.mutate,
     onboardFarmer: onboardFarmerMutation.mutate,
@@ -99,5 +100,5 @@ export const useAuth = () => {
     isLoading: loginMutation.isPending || signupMutation.isPending || onboardFarmerMutation.isPending || onboardCompanyMutation.isPending || updateFarmerMutation.isPending || updateCompanyMutation.isPending || userQuery.isLoading,
     error: loginMutation.error || signupMutation.error || onboardFarmerMutation.error || onboardCompanyMutation.error || updateFarmerMutation.error || updateCompanyMutation.error,
     logout,
-  };
+  }), [loginMutation.mutate, signupMutation.mutate, onboardFarmerMutation.mutate, onboardCompanyMutation.mutate, updateFarmerMutation.mutate, updateCompanyMutation.mutate, userQuery.data, loginMutation.isPending, signupMutation.isPending, onboardFarmerMutation.isPending, onboardCompanyMutation.isPending, updateFarmerMutation.isPending, updateCompanyMutation.isPending, userQuery.isLoading, loginMutation.error, signupMutation.error, onboardFarmerMutation.error, onboardCompanyMutation.error, updateFarmerMutation.error, updateCompanyMutation.error]);
 };
