@@ -62,17 +62,22 @@ class OrderServices {
 
     // update order + pickup schedule + trigger payouts in one transaction
     const [updatedOrder] = await prisma.$transaction([
-      // 1. mark order as delivered
+      // 1. mark order as closed
       prisma.order.update({
         where: { order_id },
-        data: { status: "delivered" },
+        data: { status: "closed" },
       }),
       // 2. mark pickup schedule as delivered
       prisma.pickup_Schedule.update({
         where: { order_id },
         data: { status: "delivered" },
       }),
-      // 3. create farmer payout record
+      // 3. update payment status to released
+      prisma.payment.update({
+        where: { order_id },
+        data: { status: "released" },
+      }),
+      // 4. create farmer payout record
       prisma.payout.create({
         data: {
           order_id,
@@ -82,7 +87,7 @@ class OrderServices {
           status: "pending",
         },
       }),
-      // 4. create logistics payout record
+      // 5. create logistics payout record
       prisma.payout.create({
         data: {
           order_id,

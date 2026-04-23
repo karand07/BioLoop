@@ -181,58 +181,36 @@ class RequestServices {
     }
 
     if (status === 'accepted') {
-      // Calculate order details
-      const farmer = await prisma.farmerProfile.findUnique({ where: { farmer_id: request.farmer_id } });
-      const company = await prisma.companyProfile.findUnique({ where: { company_id: request.company_id } });
-
-      const { calculateDistance } = await import("../utils/calculateDistance.js");
-      const distanceKm = await calculateDistance(
-        { lat: Number(farmer!.latitude), lng: Number(farmer!.longitude) },
-        { lat: Number(company!.latitude), lng: Number(company!.longitude) }
-      );
-
-      const ratePerKm = 15;
-      const baseCharge = 200;
-      const deliveryCost = baseCharge + distanceKm * ratePerKm;
-      const finalPrice = negotiated_price || request.offered_price;
-      const platformCommission = Number(finalPrice) * 0.03;
-      const totalAmount = Number(finalPrice) * Number(request.requested_quantity) + deliveryCost + platformCommission;
-
       return await prisma.$transaction(async (tx) => {
-        // 1. Create Order
-        const order = await tx.order.create({
-          data: {
-            request_id,
-            farmer_id: request.farmer_id,
-            company_id: request.company_id,
-            final_price: finalPrice,
-            quantity: request.requested_quantity,
-            delivery_cost: deliveryCost,
-            platform_commission: platformCommission,
-            total_amount: totalAmount,
-            status: 'confirmed'
-          }
-        });
-
-        // 2. Update Request
-        await tx.order_Request.update({
+        // 1. Update Request to negotiating
+        const updatedRequest = await tx.order_Request.update({
           where: { request_id },
-          data: { status: 'accepted', is_active: false }
+          data: { status: 'negotiating' }
         });
 
-        // 3. Mark Listing as Sold
+        // 2. Mark Listing as Sold
         await tx.waste_Listings.update({
           where: { listing_id: request.listing_id },
           data: { status: 'sold' }
         });
 
-        // 4. Reject other requests
+        // 3. Auto-reject other requests
         await tx.order_Request.updateMany({
           where: { listing_id: request.listing_id, request_id: { not: request_id } },
           data: { status: 'auto_rejected', is_active: false }
         });
 
-        return order;
+        // 4. Create initial negotiation record
+        await tx.negotiation.create({
+          data: {
+            request_id,
+            proposed_price: request.offered_price,
+            proposed_by: 'company', // original offer was by company
+            message: 'Negotiation started'
+          }
+        });
+
+        return updatedRequest;
       });
     }
   }

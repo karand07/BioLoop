@@ -76,6 +76,33 @@ export const useOrders = () => {
     },
   });
 
+  const initiatePaymentMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      const response = await api.post('/payment/create', { order_id: orderId });
+      return response.data;
+    },
+  });
+
+  const verifyPaymentMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/payment/verify', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
+  const confirmDeliveryMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      const response = await api.patch(`/order/${orderId}/confirm-delivery`);
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
   return {
     orders: myOrdersQuery.data || [],
     isOrdersLoading: myOrdersQuery.isLoading,
@@ -91,6 +118,12 @@ export const useOrders = () => {
     isProposing: proposeSlotsMutation.isPending,
     confirmSlot: confirmSlotMutation.mutate,
     isConfirming: confirmSlotMutation.isPending,
+    initiatePayment: initiatePaymentMutation.mutateAsync,
+    isInitiatingPayment: initiatePaymentMutation.isPending,
+    verifyPayment: verifyPaymentMutation.mutate,
+    isVerifyingPayment: verifyPaymentMutation.isPending,
+    confirmDelivery: confirmDeliveryMutation.mutate,
+    isConfirmingDelivery: confirmDeliveryMutation.isPending,
     refetchOrders: myOrdersQuery.refetch,
     refetchRequests: getIncomingRequestsQuery.refetch,
     refetchMyRequests: getMyRequestsQuery.refetch,

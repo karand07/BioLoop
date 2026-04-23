@@ -107,6 +107,18 @@ export default function FarmerOrders() {
                     </p>
                   </div>
                   
+                  {order.status === 'confirmed' && (
+                    <div className="bg-blue-50 border border-blue-100 px-6 py-4 rounded-2xl flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                        <Clock className="w-5 h-5 animate-pulse" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-blue-900 uppercase tracking-widest">Payment Pending</p>
+                        <p className="text-[10px] text-blue-700 font-bold mt-0.5">Buyer needs to complete payment to start logistics.</p>
+                      </div>
+                    </div>
+                  )}
+
                   {!order.pickup_schedule && order.status === 'in_transit' && (
                     <button 
                       onClick={() => setSelectedOrder(order)}
