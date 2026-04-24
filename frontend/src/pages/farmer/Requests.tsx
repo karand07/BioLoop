@@ -1,10 +1,12 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Package, Building2, IndianRupee, Check, X, MessageSquare, Loader2 } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import NegotiationBlock from '../../components/negotiation/NegotiationBlock';
 
 export default function FarmerRequests() {
+  const { t } = useTranslation();
   const { incomingRequests, isRequestsLoading, respondToRequest, isResponding, refetchRequests } = useOrders();
   const [negotiatingId, setNegotiatingId] = useState<number | null>(null);
   const [negotiatedPrice, setNegotiatedPrice] = useState<string>('');
@@ -26,8 +28,8 @@ export default function FarmerRequests() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Incoming Requests</h1>
-        <p className="text-slate-500 mt-1">Manage purchase requests and negotiations from companies.</p>
+        <h1 className="text-3xl font-bold text-slate-900">{t('incoming_requests')}</h1>
+        <p className="text-slate-500 mt-1">{t('manage_requests_desc')}</p>
       </div>
 
       {isRequestsLoading ? (
@@ -39,9 +41,9 @@ export default function FarmerRequests() {
           <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <MessageSquare className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900">No requests yet</h3>
+          <h3 className="text-xl font-bold text-slate-900">{t('no_requests_yet')}</h3>
           <p className="text-slate-500 mt-2 max-w-xs mx-auto">
-            You'll see purchase requests here once companies discover your listings.
+            {t('no_requests_desc')}
           </p>
         </div>
       ) : (
@@ -51,7 +53,7 @@ export default function FarmerRequests() {
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* Listing Preview */}
                 <div className="w-full lg:w-48 aspect-video lg:aspect-square rounded-2xl overflow-hidden bg-slate-100 shrink-0">
-                  <img src={request.listing?.images} alt="Waste" className="w-full h-full object-cover" />
+                  <img src={request.listing?.images} alt={t('bio_waste')} className="w-full h-full object-cover" />
                 </div>
 
                 {/* Info */}
@@ -60,16 +62,18 @@ export default function FarmerRequests() {
                     <div>
                       <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm mb-1">
                         <Package className="w-4 h-4" />
-                        {request.listing?.category?.name}
+                        {request.listing?.category?.name || t('bio_waste')}
                       </div>
                       <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                         <Building2 className="w-5 h-5 text-slate-400" />
                         {request.company?.company_name}
                       </h3>
-                      <p className="text-sm text-slate-500 mt-1">Request sent on {new Date(request.created_at).toLocaleDateString()}</p>
+                      <p className="text-sm text-slate-500 mt-1">
+                        {t('request_sent_on')} {new Date(request.created_at).toLocaleDateString()}
+                      </p>
                     </div>
                     <div className="bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Offered Price</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('offered_price')}</p>
                       <p className="text-lg font-bold text-emerald-600 flex items-center">
                         <IndianRupee className="w-4 h-4" />
                         {request.offered_price}
@@ -80,26 +84,26 @@ export default function FarmerRequests() {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-slate-50">
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Quantity</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('quantity')}</p>
                       <p className="font-bold text-slate-700">{request.requested_quantity} {request.listing?.category?.unit}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Listing Price</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('listing_price')}</p>
                       <p className="font-bold text-slate-700">₹{request.listing?.asking_price}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Value</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('total_value')}</p>
                       <p className="font-bold text-slate-900">₹{request.offered_price * request.requested_quantity}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('status')}</p>
                       <span className={cn(
                         "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter",
                         request.status === 'pending' ? 'bg-amber-100 text-amber-700' : 
                         request.status === 'accepted' ? 'bg-emerald-100 text-emerald-700' :
                         'bg-red-100 text-red-700'
                       )}>
-                        {request.status}
+                        {t(request.status)}
                       </span>
                     </div>
                   </div>
@@ -122,7 +126,7 @@ export default function FarmerRequests() {
                                type="number"
                                value={negotiatedPrice}
                                onChange={(e) => setNegotiatedPrice(e.target.value)}
-                               placeholder="Initial Counter Offer"
+                               placeholder={t('initial_counter_offer')}
                                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
                              />
                            </div>
@@ -131,7 +135,7 @@ export default function FarmerRequests() {
                              disabled={isResponding || !negotiatedPrice}
                              className="bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-700 disabled:opacity-50"
                            >
-                             Send Offer
+                             {t('send_offer')}
                            </button>
                            <button 
                              onClick={() => setNegotiatingId(null)}
@@ -147,21 +151,21 @@ export default function FarmerRequests() {
                              disabled={isResponding}
                              className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all active:scale-[0.98]"
                            >
-                             <Check className="w-5 h-5" /> Accept Request
+                             <Check className="w-5 h-5" /> {t('accept_request')}
                            </button>
                            <button 
                              onClick={() => setNegotiatingId(request.request_id)}
                              disabled={isResponding}
                              className="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 transition-all"
                            >
-                             <MessageSquare className="w-5 h-5 text-emerald-500" /> Start Negotiation
+                             <MessageSquare className="w-5 h-5 text-emerald-500" /> {t('start_negotiation')}
                            </button>
                            <button 
                              onClick={() => handleAction(request.request_id, 'rejected')}
                              disabled={isResponding}
                              className="bg-red-50 text-red-600 px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-red-100 transition-all"
                            >
-                             <X className="w-5 h-5" /> Reject
+                             <X className="w-5 h-5" /> {t('reject')}
                            </button>
                          </>
                        )}

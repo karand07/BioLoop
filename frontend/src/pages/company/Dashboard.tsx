@@ -1,10 +1,14 @@
-import {  ShoppingBag, MessageSquare, IndianRupee, TrendingUp, Package, Clock, ArrowUpRight, ArrowRight, Loader2, Building2 } from 'lucide-react';
+import { ShoppingBag, MessageSquare, IndianRupee, TrendingUp, Package, Clock, ArrowUpRight, ArrowRight, Loader2, Building2 } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
+import { useWaste } from '../../hooks/useWaste';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
 export default function CompanyDashboard() {
+  const { t } = useTranslation();
   const { orders, myRequests, isOrdersLoading, isMyRequestsLoading } = useOrders();
+  const { categories, isListingsLoading: isWasteLoading } = useWaste();
 
   const totalSpent = orders.reduce((acc: number, order: any) => acc + parseFloat(order.total_amount), 0);
   const activeOrders = orders.filter((o: any) => o.status !== 'closed' && o.status !== 'delivered');
@@ -12,13 +16,13 @@ export default function CompanyDashboard() {
   const totalSourced = orders.reduce((acc: number, order: any) => acc + parseFloat(order.quantity), 0);
 
   const stats = [
-    { label: 'Total Sourced', value: `${totalSourced.toFixed(1)} MT`, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Total Investment', value: `₹${totalSpent.toLocaleString()}`, icon: IndianRupee, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Active Orders', value: activeOrders.length, icon: ShoppingBag, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'Pending Proposals', value: pendingRequests.length, icon: MessageSquare, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: t('total_sourced'), value: `${totalSourced.toFixed(1)} MT`, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: t('total_investment'), value: `₹${totalSpent.toLocaleString()}`, icon: IndianRupee, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: t('active_orders'), value: activeOrders.length, icon: ShoppingBag, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: t('pending_proposals'), value: pendingRequests.length, icon: MessageSquare, color: 'text-amber-600', bg: 'bg-amber-50' },
   ];
 
-  if (isOrdersLoading || isMyRequestsLoading) {
+  if (isOrdersLoading || isMyRequestsLoading || isWasteLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
@@ -31,12 +35,12 @@ export default function CompanyDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Business Overview</h1>
-          <p className="text-slate-500 mt-1">Real-time metrics for your sustainable sourcing operations.</p>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{t('business_overview')}</h1>
+          <p className="text-slate-500 mt-1">{t('sourcing_metrics_desc')}</p>
         </div>
         <div className="bg-white border border-slate-200 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-sm">
           <Clock className="w-4 h-4 text-emerald-500" />
-          <span className="text-sm font-bold text-slate-600">Updated just now</span>
+          <span className="text-sm font-bold text-slate-600">{t('updated_now')}</span>
         </div>
       </div>
 
@@ -47,10 +51,6 @@ export default function CompanyDashboard() {
             <div className="flex items-start justify-between mb-4">
               <div className={cn("p-4 rounded-2xl transition-transform group-hover:scale-110", stat.bg, stat.color)}>
                 <stat.icon className="w-6 h-6" />
-              </div>
-              <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold">
-                <TrendingUp className="w-3 h-3" />
-                +12%
               </div>
             </div>
             <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">{stat.label}</p>
@@ -64,9 +64,9 @@ export default function CompanyDashboard() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
             <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-slate-900">Recent Sourcing Requests</h3>
+              <h3 className="text-xl font-bold text-slate-900">{t('recent_sourcing_requests')}</h3>
               <Link to="/company/requests" className="text-emerald-600 text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all">
-                View All <ArrowRight className="w-4 h-4" />
+                {t('view_all')} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
             <div className="divide-y divide-slate-50">
@@ -77,21 +77,21 @@ export default function CompanyDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-slate-900 truncate">{request.listing?.farmer?.farm_name}</p>
-                    <p className="text-xs text-slate-400 font-medium">Requested {request.requested_quantity} {request.listing?.category?.unit} • ₹{request.offered_price}</p>
+                    <p className="text-xs text-slate-400 font-medium">{t('requested_units', { quantity: request.requested_quantity, category: request.listing?.category?.name })} • ₹{request.offered_price}</p>
                   </div>
                   <div className={cn(
                     "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest",
                     request.status === 'pending' ? 'bg-amber-50 text-amber-600' : 
                     request.status === 'accepted' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'
                   )}>
-                    {request.status}
+                    {t(request.status)}
                   </div>
                 </div>
               ))}
               {myRequests.length === 0 && (
                 <div className="p-20 text-center text-slate-400">
                   <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                  <p className="text-sm font-bold">No active requests</p>
+                  <p className="text-sm font-bold">{t('no_active_requests')}</p>
                 </div>
               )}
             </div>
@@ -102,14 +102,14 @@ export default function CompanyDashboard() {
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-emerald-100">
              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500 opacity-20 rounded-full -translate-y-1/2 translate-x-1/2" />
-             <h3 className="text-xl font-bold mb-6 relative z-10">Active Deliveries</h3>
+             <h3 className="text-xl font-bold mb-6 relative z-10">{t('active_deliveries')}</h3>
              
              <div className="space-y-6 relative z-10">
                 {activeOrders.slice(0, 3).map((order: any) => (
                   <div key={order.order_id} className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
                      <div className="flex items-center justify-between mb-3">
                         <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">#{order.order_id}</span>
-                        <span className="text-[10px] font-black bg-white/10 px-2 py-1 rounded-lg uppercase tracking-widest">{order.status}</span>
+                        <span className="text-[10px] font-black bg-white/10 px-2 py-1 rounded-lg uppercase tracking-widest">{t(order.status)}</span>
                      </div>
                      <div className="flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white">
@@ -125,7 +125,7 @@ export default function CompanyDashboard() {
                 {activeOrders.length === 0 && (
                    <div className="text-center py-10 opacity-40">
                       <ShoppingBag className="w-10 h-10 mx-auto mb-4" />
-                      <p className="text-xs font-bold uppercase tracking-widest">No active orders</p>
+                      <p className="text-xs font-bold uppercase tracking-widest">{t('no_active_orders')}</p>
                    </div>
                 )}
              </div>
@@ -134,26 +134,22 @@ export default function CompanyDashboard() {
               to="/company/orders"
               className="mt-8 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-emerald-500 transition-all"
              >
-                Manage Orders
+                {t('manage_orders')}
                 <ArrowUpRight className="w-4 h-4" />
              </Link>
           </div>
 
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-             <h4 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Market Status</h4>
+             <h4 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">{t('market_status')}</h4>
              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                   <span className="text-slate-500 text-sm">Rice Husk</span>
-                   <span className="text-emerald-600 text-sm font-bold flex items-center gap-1">
-                      <TrendingUp className="w-4 h-4" /> ₹4.2/kg
-                   </span>
-                </div>
-                <div className="flex items-center justify-between">
-                   <span className="text-slate-500 text-sm">Sugarcane Bagasse</span>
-                   <span className="text-emerald-600 text-sm font-bold flex items-center gap-1">
-                      <TrendingUp className="w-4 h-4" /> ₹3.8/kg
-                   </span>
-                </div>
+                {categories.slice(0, 4).map((cat: any) => (
+                  <div key={cat.category_id} className="flex items-center justify-between">
+                    <span className="text-slate-500 text-sm font-medium">{cat.name}</span>
+                    <span className="text-emerald-600 text-sm font-bold flex items-center gap-1">
+                        <TrendingUp className="w-4 h-4" /> ₹{cat.min_ref_price}/ {cat.unit}
+                    </span>
+                  </div>
+                ))}
              </div>
           </div>
         </div>

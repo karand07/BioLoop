@@ -121,16 +121,17 @@ async getPayoutStatus(order_id: number, userId: number) {
   return payouts;
 }
 
-async getMyPayouts(userId: number) {
-  const payouts = await prisma.payout.findMany({
-    where: {
-      recipient_type: "farmer",
-      recipient_id: userId,
-    },
-    orderBy: { processed_at: "desc" },
-  });
-  return payouts;
-}
+  async getMyPayouts(userId: number, role: string) {
+    const recipient_type = role === "logistics" ? "logistics" : "farmer";
+    const payouts = await prisma.payout.findMany({
+      where: {
+        recipient_type,
+        recipient_id: userId,
+      },
+      orderBy: { payout_id: "desc" },
+    });
+    return payouts;
+  }
 }
 
 export const payoutServices = new PayoutServices();

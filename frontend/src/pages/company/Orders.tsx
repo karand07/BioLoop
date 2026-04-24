@@ -1,21 +1,25 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { ShoppingBag, IndianRupee, Truck, Loader2, Building2, MapPin, Clock, CheckCircle2, Calendar, X, Package } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { useAuth } from '../../hooks/useAuth';
+import { useSystem } from '../../hooks/useSystem';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
-const orderStatusColors: Record<string, string> = {
-  confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
-  in_transit: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-  delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  closed: 'bg-slate-100 text-slate-600 border-slate-200',
-};
-
 export default function CompanyOrders() {
+  const { t } = useTranslation();
   const { orders, isOrdersLoading, confirmSlot, isConfirming, initiatePayment, isInitiatingPayment, verifyPayment, confirmDelivery, isConfirmingDelivery } = useOrders();
+  const { settings } = useSystem();
   const { user } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [viewingSummary, setViewingSummary] = useState<any>(null);
+
+  const orderStatusColors: Record<string, string> = {
+    confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
+    in_transit: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    delivered: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    closed: 'bg-slate-100 text-slate-600 border-slate-200',
+  };
 
   const handleConfirm = (slot: string) => {
     confirmSlot({ orderId: selectedOrder.order_id, slot });
@@ -63,8 +67,8 @@ export default function CompanyOrders() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">My Orders</h1>
-        <p className="text-slate-500 mt-1">Manage and track your active purchases.</p>
+        <h1 className="text-3xl font-bold text-slate-900">{t('my_orders')}</h1>
+        <p className="text-slate-500 mt-1">{t('manage_purchases_desc')}</p>
       </div>
 
       {isOrdersLoading ? (
@@ -74,8 +78,8 @@ export default function CompanyOrders() {
       ) : orders.length === 0 ? (
         <div className="bg-white rounded-[2rem] p-16 text-center border border-dashed border-slate-200">
           <ShoppingBag className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-slate-900">No orders yet</h3>
-          <p className="text-slate-500 mt-2">Your confirmed purchase requests will appear here.</p>
+          <h3 className="text-2xl font-bold text-slate-900">{t('no_orders_yet')}</h3>
+          <p className="text-slate-500 mt-2">{t('confirmed_purchases_desc')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
@@ -89,12 +93,12 @@ export default function CompanyOrders() {
                   </div>
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Order #{order.order_id}</span>
+                      <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{t('order_id_label')} #{order.order_id}</span>
                       <span className={cn(
                         "text-[10px] font-black px-3 py-1 rounded-full border uppercase tracking-widest",
                         orderStatusColors[order.status] || 'bg-slate-100'
                       )}>
-                        {order.status.replace('_', ' ')}
+                        {t(order.status)}
                       </span>
                     </div>
                     <h3 className="text-2xl font-bold text-slate-900">
@@ -115,14 +119,14 @@ export default function CompanyOrders() {
                        <div className="mt-6 bg-amber-50 p-6 rounded-3xl border border-amber-100">
                           <h4 className="text-sm font-black text-amber-800 uppercase tracking-widest mb-3 flex items-center gap-2">
                              <Clock className="w-4 h-4" />
-                             Action Required: Confirm Pickup
+                             {t('action_required_pickup')}
                           </h4>
-                          <p className="text-xs text-amber-700 mb-4">The farmer has proposed slots. Please select one to enable logistics.</p>
+                          <p className="text-xs text-amber-700 mb-4">{t('farmer_proposed_slots')}</p>
                           <button 
                             onClick={() => setSelectedOrder(order)}
                             className="w-full bg-amber-600 text-white py-3 rounded-xl font-bold text-xs hover:bg-amber-700 transition-all"
                           >
-                             Review Proposed Slots
+                             {t('review_slots')}
                           </button>
                        </div>
                     )}
@@ -131,10 +135,10 @@ export default function CompanyOrders() {
                        <div className="mt-6 bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
                           <h4 className="text-sm font-black text-emerald-800 uppercase tracking-widest mb-2 flex items-center gap-2">
                              <CheckCircle2 className="w-4 h-4" />
-                             Pickup Scheduled
+                             {t('pickup_scheduled')}
                           </h4>
                           <p className="text-xs text-emerald-700 font-bold">
-                             Confirmed for: {new Date(order.pickup_schedule.confirmed_slot).toLocaleString()}
+                             {t('confirmed_for', { date: new Date(order.pickup_schedule.confirmed_slot).toLocaleString() })}
                           </p>
                        </div>
                     )}
@@ -146,7 +150,7 @@ export default function CompanyOrders() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-slate-50 p-4 rounded-2xl">
                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">
-                        {order.status === 'confirmed' ? 'Total Payable' : 'Total Paid'}
+                        {order.status === 'confirmed' ? t('total_payable') : t('total_paid')}
                       </p>
                       <p className="text-xl font-bold text-emerald-600 flex items-center">
                         <IndianRupee className="w-4 h-4" />
@@ -154,7 +158,7 @@ export default function CompanyOrders() {
                       </p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-2xl">
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Quantity</p>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('quantity')}</p>
                       <p className="text-xl font-bold text-slate-700 flex items-center gap-1">
                         {order.quantity}
                         <span className="text-xs opacity-50">{order.request?.listing?.category?.unit}</span>
@@ -164,9 +168,9 @@ export default function CompanyOrders() {
 
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                      <span className={cn(order.status !== 'confirmed' && 'text-emerald-500')}>Paid</span>
-                      <span className={cn((order.status === 'in_transit' || order.status === 'delivered') && 'text-emerald-500')}>In Transit</span>
-                      <span className={cn(order.status === 'closed' && 'text-emerald-500')}>Delivered</span>
+                      <span className={cn(order.status !== 'confirmed' && 'text-emerald-500')}>{t('paid_label')}</span>
+                      <span className={cn((order.status === 'in_transit' || order.status === 'delivered') && 'text-emerald-500')}>{t('in_transit')}</span>
+                      <span className={cn(order.status === 'closed' && 'text-emerald-500')}>{t('delivered')}</span>
                     </div>
                     <div className="h-2 bg-slate-100 rounded-full overflow-hidden flex gap-1 p-0.5">
                        <div className={cn("h-full bg-emerald-500 rounded-full transition-all duration-700", order.status !== 'confirmed' ? 'w-1/3' : 'w-4')} />
@@ -181,7 +185,7 @@ export default function CompanyOrders() {
                       className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 flex items-center justify-center gap-2"
                     >
                       <IndianRupee className="w-4 h-4" />
-                      View Summary & Pay
+                      {t('view_summary_pay')}
                     </button>
                   )}
 
@@ -192,20 +196,20 @@ export default function CompanyOrders() {
                       className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 flex items-center justify-center gap-2"
                     >
                       {isConfirmingDelivery ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                      Confirm Delivery
+                      {t('confirm_delivery')}
                     </button>
                   )}
 
                   {order.status === 'in_transit' && (
                     <button className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
                       <Truck className="w-4 h-4" />
-                      Track Shipment
+                      {t('track_shipment')}
                     </button>
                   )}
                   
                   {order.status === 'closed' && (
                     <div className="bg-slate-50 text-slate-500 py-3 rounded-xl font-bold text-xs text-center border border-slate-100">
-                      Transaction Completed
+                      {t('transaction_completed')}
                     </div>
                   )}
                 </div>
@@ -231,8 +235,8 @@ export default function CompanyOrders() {
                 <div className="w-20 h-20 bg-emerald-100 rounded-[2rem] flex items-center justify-center text-emerald-600 mx-auto mb-4">
                   <ShoppingBag className="w-10 h-10" />
                 </div>
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Order Summary</h2>
-                <p className="text-slate-500 font-bold text-sm">Review details before payment</p>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">{t('order_summary')}</h2>
+                <p className="text-slate-500 font-bold text-sm">{t('review_payment_details')}</p>
               </div>
 
               <div className="space-y-4 mb-10">
@@ -241,7 +245,7 @@ export default function CompanyOrders() {
                       <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
                          <Package className="w-5 h-5" />
                       </div>
-                      <span className="text-sm font-bold text-slate-600">Waste Cost ({viewingSummary.quantity} {viewingSummary.request?.listing?.category?.unit})</span>
+                      <span className="text-sm font-bold text-slate-600">{t('waste_cost', { quantity: viewingSummary.quantity, unit: viewingSummary.request?.listing?.category?.unit })}</span>
                    </div>
                    <span className="font-black text-slate-900 flex items-center gap-1">
                       <IndianRupee className="w-3.5 h-3.5" />
@@ -254,7 +258,7 @@ export default function CompanyOrders() {
                       <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
                          <Truck className="w-5 h-5" />
                       </div>
-                      <span className="text-sm font-bold text-slate-600">Logistics & Delivery</span>
+                      <span className="text-sm font-bold text-slate-600">{t('logistics_delivery')}</span>
                    </div>
                    <span className="font-black text-slate-900 flex items-center gap-1">
                       <IndianRupee className="w-3.5 h-3.5" />
@@ -267,7 +271,7 @@ export default function CompanyOrders() {
                       <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
                          <CheckCircle2 className="w-5 h-5" />
                       </div>
-                      <span className="text-sm font-bold text-slate-600">Platform Commission (3%)</span>
+                      <span className="text-sm font-bold text-slate-600">{t('platform_commission', { rate: settings?.commission_rate || '5.0' })}</span>
                    </div>
                    <span className="font-black text-slate-900 flex items-center gap-1">
                       <IndianRupee className="w-3.5 h-3.5" />
@@ -278,7 +282,7 @@ export default function CompanyOrders() {
                 <div className="h-px bg-slate-100 my-4" />
 
                 <div className="flex justify-between items-center px-4">
-                   <span className="text-lg font-black text-slate-900">Total Payable</span>
+                   <span className="text-lg font-black text-slate-900">{t('total_payable')}</span>
                    <span className="text-3xl font-black text-emerald-600 flex items-center gap-1">
                       <IndianRupee className="w-6 h-6" />
                       {Number(viewingSummary.total_amount).toFixed(2)}
@@ -296,14 +300,14 @@ export default function CompanyOrders() {
                 ) : (
                   <>
                     <IndianRupee className="w-5 h-5" />
-                    Complete Secure Payment
+                    {t('complete_secure_payment')}
                   </>
                 )}
               </button>
               
               <p className="text-center text-[10px] text-slate-400 font-bold mt-6 flex items-center justify-center gap-2">
                  <Truck className="w-3 h-3" />
-                 Secured Escrow Payment via Razorpay
+                 {t('secured_escrow_payment')}
               </p>
             </div>
           </div>
@@ -327,8 +331,8 @@ export default function CompanyOrders() {
                   <Calendar className="w-8 h-8" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900">Select Slot</h2>
-                  <p className="text-slate-500">Pick a time for the pickup.</p>
+                  <h2 className="text-2xl font-bold text-slate-900">{t('select_slot')}</h2>
+                  <p className="text-slate-500">{t('pick_pickup_time')}</p>
                 </div>
               </div>
 
@@ -341,7 +345,7 @@ export default function CompanyOrders() {
                     className="w-full p-6 text-left border-2 border-slate-100 rounded-3xl hover:border-emerald-500 hover:bg-emerald-50 transition-all group flex items-center justify-between"
                   >
                     <div>
-                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Option {index + 1}</p>
+                       <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('option_label', { index: index + 1 })}</p>
                        <p className="font-bold text-slate-700">{new Date(slot).toLocaleString()}</p>
                     </div>
                     <CheckCircle2 className="w-6 h-6 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -350,7 +354,7 @@ export default function CompanyOrders() {
               </div>
 
               <div className="mt-8 bg-slate-50 p-4 rounded-2xl text-xs text-slate-500 leading-relaxed italic">
-                 Once confirmed, this order will be visible to our logistics partners for pickup.
+                 {t('slot_confirmation_notice')}
               </div>
             </div>
           </div>

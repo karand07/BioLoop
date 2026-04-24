@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Mail, Lock, Phone, ArrowRight, Loader2, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
+import LanguageSwitcher from '../../components/shared/LanguageSwitcher';
 import { cn } from '../../lib/utils';
 
-const roles = [
-  { id: 'farmer', name: 'Farmer', description: 'List your bio-waste for sale' },
-  { id: 'company', name: 'Company', description: 'Purchase and manage bio-waste' },
-  { id: 'logistics', name: 'Logistics', description: 'Provide pickup and transport services' },
-];
-
 export default function Signup() {
+  const { t } = useTranslation();
+  
+  const roles = [
+    { id: 'farmer', name: t('landing.for_farmers'), description: t('auth.farmer_desc_short') },
+    { id: 'company', name: t('landing.for_industry'), description: t('auth.company_desc_short') },
+    { id: 'logistics', name: t('logistics_portal_label'), description: t('auth.logistics_desc_short') },
+  ];
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -39,16 +43,19 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4 py-12 relative">
+      <div className="absolute top-8 right-8">
+        <LanguageSwitcher />
+      </div>
       <div className="max-w-2xl w-full">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div className="bg-emerald-600 p-3 rounded-2xl shadow-lg shadow-emerald-200 mb-4">
             <Leaf className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">Create Your Account</h1>
+          <h1 className="text-3xl font-bold text-slate-900">{t('auth.create_your_account')}</h1>
           <p className="text-slate-500 mt-2 text-center">
-            Join the BioLoop ecosystem and start your journey towards sustainable waste management.
+            {t('auth.signup_desc')}
           </p>
         </div>
 
@@ -57,7 +64,7 @@ export default function Signup() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('auth.email_address')}</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -72,7 +79,7 @@ export default function Signup() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('auth.phone_number')}</label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -89,7 +96,7 @@ export default function Signup() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">{t('auth.password')}</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
@@ -105,7 +112,7 @@ export default function Signup() {
 
             {/* Role Selection */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-4">Select Your Role</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-4">{t('auth.select_your_role')}</label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {roles.map((role) => (
                   <div
@@ -133,7 +140,7 @@ export default function Signup() {
 
             {error && (
               <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium border border-red-100">
-                {(error as any).response?.data?.message || 'Failed to create account. Please try again.'}
+                {(error as any).response?.data?.message || t('auth.signup_failed')}
               </div>
             )}
 
@@ -146,7 +153,7 @@ export default function Signup() {
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  Create Account
+                  {t('auth.create_account')}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -154,9 +161,9 @@ export default function Signup() {
           </form>
 
           <div className="mt-8 pt-6 border-t border-slate-100 text-center text-slate-500 text-sm">
-            Already have an account?{' '}
+            {t('auth.already_have_account')}{' '}
             <Link to="/login" className="font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
-              Sign In
+              {t('auth.sign_in')}
             </Link>
           </div>
         </div>

@@ -29,7 +29,8 @@ getPayoutStatus = async (req: Request, res: Response) => {
 
 getMyPayouts = async (req: Request, res: Response) => {
   const userId = req.user?.id;
-  const payouts = await payoutServices.getMyPayouts(userId!);
+  const role = req.user?.role;
+  const payouts = await payoutServices.getMyPayouts(userId!, role!);
   return res.status(200).json({
     message: "Payouts fetched successfully",
     data: payouts,

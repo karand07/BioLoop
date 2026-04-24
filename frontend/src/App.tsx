@@ -19,6 +19,8 @@ import CompanyProfile from './pages/company/Profile';
 
 import LogisticsLayout from './components/layouts/LogisticsLayout';
 import LogisticsDashboard from './pages/logistics/Dashboard';
+import LogisticsDeliveries from './pages/logistics/Deliveries';
+import LogisticsFind from './pages/logistics/Find';
 import LogisticsProfile from './pages/logistics/Profile';
 import LogisticsEarnings from './pages/logistics/Earnings';
 
@@ -76,8 +78,8 @@ function App() {
           <Route element={<LogisticsLayout />}>
             <Route path="/logistics/dashboard" element={<LogisticsDashboard />} />
             <Route path="/logistics/earnings" element={<LogisticsEarnings />} />
-            <Route path="/logistics/deliveries" element={<LogisticsDashboard />} />
-            <Route path="/logistics/find" element={<LogisticsDashboard />} />
+            <Route path="/logistics/deliveries" element={<LogisticsDeliveries />} />
+            <Route path="/logistics/find" element={<LogisticsFind />} />
             <Route path="/logistics/profile" element={<LogisticsProfile />} />
             <Route path="/logistics/onboarding" element={<LogisticsProfile />} />
           </Route>

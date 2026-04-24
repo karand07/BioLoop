@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Search, Filter, MapPin, IndianRupee, Package, Calendar, ArrowRight, Loader2, ShoppingCart,  X } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
 import { useOrders } from '../../hooks/useOrders';
+import { useTranslation } from 'react-i18next';
 
 export default function CompanyMarketplace() {
+  const { t } = useTranslation();
   const { listings, categories, isListingsLoading } = useWaste();
   const { createRequest, isCreatingRequest } = useOrders();
   
@@ -42,9 +44,9 @@ export default function CompanyMarketplace() {
           <Package className="w-full h-full -rotate-12 translate-x-1/4" />
         </div>
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-4xl font-bold mb-4">Source Sustainable Bio-Waste</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('source_bio_waste')}</h1>
           <p className="text-emerald-100 text-lg leading-relaxed">
-            Direct access to verified farmers and agricultural waste. Build a greener supply chain today.
+            {t('marketplace_hero_desc')}
           </p>
           
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
@@ -52,7 +54,7 @@ export default function CompanyMarketplace() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-300" />
               <input 
                 type="text"
-                placeholder="Search by waste type..."
+                placeholder={t('search_waste_type')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white placeholder:text-emerald-300 focus:ring-2 focus:ring-emerald-400 outline-none transition-all"
@@ -65,7 +67,7 @@ export default function CompanyMarketplace() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="appearance-none pl-12 pr-10 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl text-white outline-none focus:ring-2 focus:ring-emerald-400 transition-all cursor-pointer"
               >
-                <option value="all" className="text-slate-900">All Categories</option>
+                <option value="all" className="text-slate-900">{t('all_categories')}</option>
                 {categories.map((cat: any) => (
                   <option key={cat.category_id} value={cat.category_id.toString()} className="text-slate-900">
                     {cat.name}
@@ -85,8 +87,8 @@ export default function CompanyMarketplace() {
       ) : filteredListings.length === 0 ? (
         <div className="bg-white rounded-3xl p-16 text-center border border-dashed border-slate-200">
           <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-slate-900">No listings found</h3>
-          <p className="text-slate-500 mt-2">Try adjusting your filters or search query.</p>
+          <h3 className="text-2xl font-bold text-slate-900">{t('no_listings_found')}</h3>
+          <p className="text-slate-500 mt-2">{t('adjust_filters_desc')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,7 +121,7 @@ export default function CompanyMarketplace() {
                     <span className="text-sm font-medium">{listing.farmer?.city}, {listing.farmer?.state}</span>
                   </div>
                   <div className="text-xs font-bold text-emerald-600 uppercase tracking-tighter bg-emerald-50 px-2 py-1 rounded-lg">
-                    {listing.quantity} {listing.category?.unit} Avail.
+                    {listing.quantity} {listing.category?.unit} {t('avail_short')}
                   </div>
                 </div>
 
@@ -128,7 +130,7 @@ export default function CompanyMarketplace() {
                 
                 <div className="flex items-center gap-4 py-4 border-y border-slate-50">
                   <div className="flex-1">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Available From</p>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">{t('available_from')}</p>
                     <div className="flex items-center gap-1.5 text-sm font-bold text-slate-700">
                       <Calendar className="w-4 h-4 text-emerald-500" />
                       {new Date(listing.available_from).toLocaleDateString()}
@@ -144,7 +146,7 @@ export default function CompanyMarketplace() {
                   className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all active:scale-[0.98]"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  Send Request
+                  {t('send_request')}
                 </button>
               </div>
             </div>
@@ -169,8 +171,8 @@ export default function CompanyMarketplace() {
                   <ShoppingCart className="w-8 h-8" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900">Purchase Request</h2>
-                  <p className="text-slate-500">Source from {selectedListing.farmer?.farm_name}</p>
+                  <h2 className="text-2xl font-bold text-slate-900">{t('purchase_request')}</h2>
+                  <p className="text-slate-500">{t('source_from', { farm_name: selectedListing.farmer?.farm_name })}</p>
                 </div>
               </div>
 
@@ -180,14 +182,14 @@ export default function CompanyMarketplace() {
                       <img src={selectedListing.images} className="w-full h-full object-cover" />
                    </div>
                    <div>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Listing Detail</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('listing_detail')}</p>
                       <p className="font-bold text-slate-700">{selectedListing.category?.name} • ₹{selectedListing.asking_price}/{selectedListing.category?.unit}</p>
                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Quantity ({selectedListing.category?.unit})</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('quantity_with_unit', { unit: selectedListing.category?.unit })}</label>
                     <div className="relative">
                       <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
@@ -202,7 +204,7 @@ export default function CompanyMarketplace() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Offered Price (Per {selectedListing.category?.unit})</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('offered_price_per_unit', { unit: selectedListing.category?.unit })}</label>
                     <div className="relative">
                       <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
@@ -218,7 +220,7 @@ export default function CompanyMarketplace() {
 
                 <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
                   <div className="flex items-center justify-between text-emerald-900 font-bold">
-                    <span>Estimated Total</span>
+                    <span>{t('estimated_total')}</span>
                     <span className="text-xl flex items-center">
                       <IndianRupee className="w-5 h-5" />
                       {(parseFloat(orderData.quantity || '0') * parseFloat(orderData.price || '0')).toFixed(2)}
@@ -235,7 +237,7 @@ export default function CompanyMarketplace() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      Confirm Request
+                      {t('confirm_request')}
                       <ArrowRight className="w-5 h-5" />
                     </>
                   )}

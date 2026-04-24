@@ -1,26 +1,28 @@
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, IndianRupee, Package,  Clock, CheckCircle2, XCircle, AlertCircle, Loader2, Building2 } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import NegotiationBlock from '../../components/negotiation/NegotiationBlock';
 
-const statusConfig: Record<string, { color: string, icon: any, label: string }> = {
-  pending: { color: 'bg-amber-50 text-amber-700 border-amber-100', icon: Clock, label: 'Pending Response' },
-  negotiating: { color: 'bg-blue-50 text-blue-700 border-blue-100', icon: MessageSquare, label: 'In Negotiation' },
-  accepted: { color: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: CheckCircle2, label: 'Accepted' },
-  rejected: { color: 'bg-red-50 text-red-700 border-red-100', icon: XCircle, label: 'Rejected' },
-  auto_rejected: { color: 'bg-slate-50 text-slate-500 border-slate-100', icon: AlertCircle, label: 'Expired' },
-};
-
 export default function CompanyRequests() {
+  const { t } = useTranslation();
   const { myRequests, isMyRequestsLoading, refetchMyRequests } = useOrders();
   const navigate = useNavigate();
+
+  const statusConfig: Record<string, { color: string, icon: any, label: string }> = {
+    pending: { color: 'bg-amber-50 text-amber-700 border-amber-100', icon: Clock, label: t('pending_response') },
+    negotiating: { color: 'bg-blue-50 text-blue-700 border-blue-100', icon: MessageSquare, label: t('in_negotiation') },
+    accepted: { color: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: CheckCircle2, label: t('accepted') },
+    rejected: { color: 'bg-red-50 text-red-700 border-red-100', icon: XCircle, label: t('rejected') },
+    auto_rejected: { color: 'bg-slate-50 text-slate-500 border-slate-100', icon: AlertCircle, label: t('expired') },
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Sent Requests</h1>
-        <p className="text-slate-500 mt-1">Track the status of your purchase proposals.</p>
+        <h1 className="text-3xl font-bold text-slate-900">{t('sent_requests')}</h1>
+        <p className="text-slate-500 mt-1">{t('track_proposals_desc')}</p>
       </div>
 
       {isMyRequestsLoading ? (
@@ -30,8 +32,8 @@ export default function CompanyRequests() {
       ) : myRequests.length === 0 ? (
         <div className="bg-white rounded-[2rem] p-16 text-center border border-dashed border-slate-200">
           <MessageSquare className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-slate-900">No requests sent</h3>
-          <p className="text-slate-500 mt-2">Browse the marketplace to find waste and send requests.</p>
+          <h3 className="text-2xl font-bold text-slate-900">{t('no_requests_sent')}</h3>
+          <p className="text-slate-500 mt-2">{t('browse_marketplace_desc')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
@@ -60,7 +62,7 @@ export default function CompanyRequests() {
                           {request.listing?.farmer?.farm_name}
                         </h3>
                         <p className="text-sm text-slate-500 flex items-center gap-1.5">
-                          Sent on {new Date(request.created_at).toLocaleDateString()}
+                          {t('sent_on_date', { date: new Date(request.created_at).toLocaleDateString() })}
                         </p>
                       </div>
                       <div className={cn(
@@ -74,11 +76,11 @@ export default function CompanyRequests() {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100/50">
                       <div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Requested</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('requested')}</p>
                         <p className="font-bold text-slate-900">{request.requested_quantity} {request.listing?.category?.unit}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Your Offer</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('your_offer')}</p>
                         <p className="font-bold text-emerald-600 flex items-center">
                           <IndianRupee className="w-3.5 h-3.5" />
                           {request.offered_price}
@@ -86,11 +88,11 @@ export default function CompanyRequests() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Listing Price</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('listing_price')}</p>
                         <p className="font-bold text-slate-500">₹{request.listing?.asking_price}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Total Value</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('total_value')}</p>
                         <p className="font-bold text-slate-900 text-lg">₹{(request.requested_quantity * request.offered_price).toFixed(2)}</p>
                       </div>
                     </div>
@@ -109,13 +111,13 @@ export default function CompanyRequests() {
                       <div className="bg-emerald-600 text-white p-4 rounded-2xl flex items-center justify-between">
                          <div className="flex items-center gap-3">
                             <CheckCircle2 className="w-5 h-5" />
-                            <span className="font-bold text-sm">Farmer accepted! Order is being finalized.</span>
+                            <span className="font-bold text-sm">{t('farmer_accepted_desc')}</span>
                          </div>
                          <button 
                            onClick={() => navigate('/orders')}
                            className="text-xs font-black uppercase tracking-widest bg-white/20 px-4 py-2 rounded-xl hover:bg-white/30 transition-all"
                          >
-                            View Order
+                            {t('view_order')}
                          </button>
                       </div>
                     )}

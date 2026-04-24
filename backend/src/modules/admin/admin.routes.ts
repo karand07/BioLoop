@@ -16,4 +16,8 @@ adminRouter.patch("/orders/:order_id/assign-logistics", authenticate, isAdmin, a
 // dashboard
 adminRouter.get("/dashboard", authenticate, isAdmin, adminController.getDashboardStats);
 
+// settings
+adminRouter.get("/settings", authenticate, isAdmin, adminController.getPlatformSettings);
+adminRouter.patch("/settings", authenticate, isAdmin, adminController.updatePlatformSettings);
+
 export{adminRouter};
