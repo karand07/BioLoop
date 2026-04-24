@@ -30,6 +30,10 @@ async releasePayout(order_id: number) {
     where: { farmer_id: order.farmer_id },
   });
 
+  if (!farmer?.account_number || !farmer?.ifsc) {
+    throw new Error(`Farmer (#${order.farmer_id}) bank details are missing. Payout cannot be released.`);
+  }
+
   if (!order.pickup_schedule?.logistics_id) {
     throw new Error("Logistics partner not assigned to this order");
   }
@@ -39,9 +43,13 @@ async releasePayout(order_id: number) {
     where: { logistics_id: order.pickup_schedule.logistics_id },
   });
 
+  if (!logistics?.account_number || !logistics?.ifsc) {
+    throw new Error(`Logistics partner (#${order.pickup_schedule.logistics_id}) bank details are missing. Payout cannot be released.`);
+  }
+
   // release farmer payout via razorpay route
   const farmerPayout = await createRazorpayPayout(
-    Number(order.final_price),
+    Number(order.final_price) * Number(order.quantity),
     farmer!.account_number as string,
     farmer!.ifsc as string,
     farmer!.farm_name,

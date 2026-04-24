@@ -5,10 +5,8 @@ import {
 } from "./logistics.schema.js";
 
 class LogisticsServices {
-  async create(
-    { vehicle_type, vehicle_number, service_area }: createLogisticsType,
-    userId: number,
-  ) {
+  async create(data: createLogisticsType, userId: number) {
+    const { vehicle_type, vehicle_number, service_area } = data;
     const vehicle = await prisma.logisticsProfile.findUnique({
       where: {
         logistics_id: userId,
@@ -25,6 +23,9 @@ class LogisticsServices {
         vehicle_type,
         vehicle_number,
         service_area,
+        account_number: data.account_number,
+        ifsc: data.ifsc,
+        bank_name: data.bank_name,
       },
     });
 

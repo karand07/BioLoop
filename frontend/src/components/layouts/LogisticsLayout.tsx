@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Truck,  LogOut, User, MapPin } from 'lucide-react';
+import { LayoutDashboard, Truck,  LogOut, User, MapPin, IndianRupee } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
@@ -7,6 +7,7 @@ const navItems = [
   { name: 'Dashboard', href: '/logistics/dashboard', icon: LayoutDashboard },
   { name: 'Find Shipments', href: '/logistics/find', icon: MapPin },
   { name: 'My Deliveries', href: '/logistics/deliveries', icon: Truck },
+  { name: 'Earnings', href: '/logistics/earnings', icon: IndianRupee },
   { name: 'Profile', href: '/logistics/profile', icon: User },
 ];
 

@@ -7,6 +7,7 @@ import FarmerListings from './pages/farmer/Listings';
 import FarmerRequests from './pages/farmer/Requests';
 import FarmerOrders from './pages/farmer/Orders';
 import FarmerProfile from './pages/farmer/Profile';
+import FarmerEarnings from './pages/farmer/Earnings';
 
 
 import CompanyLayout from './components/layouts/CompanyLayout';
@@ -19,6 +20,7 @@ import CompanyProfile from './pages/company/Profile';
 import LogisticsLayout from './components/layouts/LogisticsLayout';
 import LogisticsDashboard from './pages/logistics/Dashboard';
 import LogisticsProfile from './pages/logistics/Profile';
+import LogisticsEarnings from './pages/logistics/Earnings';
 
 import AdminLayout from './components/layouts/AdminLayout';
 import AdminDashboard from './pages/admin/Dashboard';
@@ -51,6 +53,7 @@ function App() {
             <Route path="/farmer/listings" element={<FarmerListings />} />
             <Route path="/farmer/requests" element={<FarmerRequests />} />
             <Route path="/farmer/orders" element={<FarmerOrders />} />
+            <Route path="/farmer/earnings" element={<FarmerEarnings />} />
             <Route path="/farmer/profile" element={<FarmerProfile />} />
             <Route path="/farmer/onboarding" element={<FarmerProfile />} />
           </Route>
@@ -72,6 +75,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={['logistics']} />}>
           <Route element={<LogisticsLayout />}>
             <Route path="/logistics/dashboard" element={<LogisticsDashboard />} />
+            <Route path="/logistics/earnings" element={<LogisticsEarnings />} />
             <Route path="/logistics/deliveries" element={<LogisticsDashboard />} />
             <Route path="/logistics/find" element={<LogisticsDashboard />} />
             <Route path="/logistics/profile" element={<LogisticsProfile />} />

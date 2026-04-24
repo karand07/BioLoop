@@ -131,11 +131,17 @@ async markDelivered(order_id: number, userId: number) {
     throw new Error("Must be picked up before marking delivered");
   }
 
-  const updated = await prisma.pickup_Schedule.update({
-    where: { order_id },
-    data: { status: "delivered" },
-  });
-  return updated;
+  const [updatedSchedule] = await prisma.$transaction([
+    prisma.pickup_Schedule.update({
+      where: { order_id },
+      data: { status: "delivered" },
+    }),
+    prisma.order.update({
+      where: { order_id },
+      data: { status: "delivered" },
+    }),
+  ]);
+  return updatedSchedule;
 }
 
 async getPickupDetails(order_id: number, userId: number) {

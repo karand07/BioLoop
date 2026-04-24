@@ -28,18 +28,25 @@ class OrderController {
   };
 
   confirmDelivery = async (req: Request, res: Response) => {
-    const userId = req.user?.id;
-    const order_id = Number(req.params.order_id);
-    if (isNaN(order_id)) {
-      return res.status(400).json({
-        message: "Invalid order id",
+    try {
+      const userId = req.user?.id;
+      const order_id = Number(req.params.order_id);
+      if (isNaN(order_id)) {
+        return res.status(400).json({
+          message: "Invalid order id",
+        });
+      }
+      const order = await orderServices.confirmDelivery(order_id, userId!);
+      return res.status(200).json({
+        message: "Delivery confirmed successfully",
+        data: order,
+      });
+    } catch (error: any) {
+      console.error("Confirm delivery failed:", error);
+      return res.status(error.message.includes("Unauthorized") ? 403 : 500).json({
+        message: error.message || "Something went wrong",
       });
     }
-    const order = await orderServices.confirmDelivery(order_id, userId!);
-    return res.status(200).json({
-      message: "Delivery confirmed successfully",
-      data: order,
-    });
   };
 }
 

@@ -56,49 +56,45 @@ class OrderServices {
     if (order.company_id !== userId) {
       throw new Error("Unauthorized — only company can confirm delivery");
     }
-    if (order.status !== "in_transit") {
-      throw new Error("Order is not in transit yet");
+    if (order.status !== "delivered") {
+      throw new Error("Order is not delivered yet");
     }
 
-    // update order + pickup schedule + trigger payouts in one transaction
-    const [updatedOrder] = await prisma.$transaction([
-      // 1. mark order as closed
+    // 1. Mark as delivered in a transaction
+    await prisma.$transaction([
       prisma.order.update({
         where: { order_id },
-        data: { status: "closed" },
+        data: { status: "delivered" },
       }),
-      // 2. mark pickup schedule as delivered
       prisma.pickup_Schedule.update({
         where: { order_id },
         data: { status: "delivered" },
       }),
-      // 3. update payment status to released
-      prisma.payment.update({
-        where: { order_id },
-        data: { status: "released" },
-      }),
-      // 4. create farmer payout record
-      prisma.payout.create({
-        data: {
-          order_id,
-          recipient_type: "farmer",
-          recipient_id: order.farmer_id,
-          amount: Number(order.final_price) * Number(order.quantity),
-          status: "pending",
-        },
-      }),
-      // 5. create logistics payout record
-      prisma.payout.create({
-        data: {
-          order_id,
-          recipient_type: "logistics",
-          recipient_id: order.pickup_schedule?.logistics_id || 0,
-          amount: order.delivery_cost,
-          status: "pending",
-        },
+      // Create pending payout records if they don't exist
+      prisma.payout.createMany({
+        data: [
+          {
+            order_id,
+            recipient_type: "farmer",
+            recipient_id: order.farmer_id,
+            amount: Number(order.final_price) * Number(order.quantity),
+            status: "pending",
+          },
+          {
+            order_id,
+            recipient_type: "logistics",
+            recipient_id: order.pickup_schedule?.logistics_id || 0,
+            amount: order.delivery_cost,
+            status: "pending",
+          },
+        ],
+        skipDuplicates: true,
       }),
     ]);
-    return updatedOrder;
+
+    // 2. Trigger actual fund release via Razorpay
+    const { payoutServices } = await import("../payouts/payouts.services.js");
+    return await payoutServices.releasePayout(order_id);
   }
 }
 
