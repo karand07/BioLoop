@@ -1,4 +1,4 @@
-import { Truck, MapPin, Package, CheckCircle2, IndianRupee, Navigation, Loader2, ArrowRight, AlertCircle, TrendingUp, Calendar, Filter, Clock } from 'lucide-react';
+import { Truck, MapPin, Package, CheckCircle2, IndianRupee, Navigation,  ArrowRight, AlertCircle, TrendingUp, Calendar, Filter, Clock } from 'lucide-react';
 import { useLogistics } from '../../hooks/useLogistics';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../hooks/useAuth';

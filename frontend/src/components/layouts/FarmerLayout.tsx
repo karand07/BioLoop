@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, List, MessageSquare, ShoppingBag, LogOut, Leaf, User } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, List, MessageSquare, ShoppingBag, LogOut, Leaf, User, IndianRupee } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
@@ -9,6 +9,7 @@ const navItems = [
   { name: 'My Listings', href: '/farmer/listings', icon: List },
   { name: 'Requests', href: '/farmer/requests', icon: MessageSquare },
   { name: 'Orders', href: '/farmer/orders', icon: ShoppingBag },
+  { name: 'Earnings', href: '/farmer/earnings', icon: IndianRupee },
   { name: 'Profile', href: '/farmer/profile', icon: User },
 ];
 

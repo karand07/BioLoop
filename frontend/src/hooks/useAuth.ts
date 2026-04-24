@@ -54,6 +54,16 @@ export const useAuth = () => {
     },
   });
 
+  const onboardLogisticsMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/logistics/create', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      navigate('/logistics/dashboard');
+    },
+  });
+
   const updateFarmerMutation = useMutation({
     mutationFn: async (formData: any) => {
       const response = await api.put('/farmer/update', formData);
@@ -67,6 +77,16 @@ export const useAuth = () => {
   const updateCompanyMutation = useMutation({
     mutationFn: async (formData: any) => {
       const response = await api.put('/company/update', formData);
+      return response.data;
+    },
+    onSuccess: () => {
+      userQuery.refetch();
+    },
+  });
+
+  const updateLogisticsMutation = useMutation({
+    mutationFn: async (formData: any) => {
+      const response = await api.put('/logistics/update', formData);
       return response.data;
     },
     onSuccess: () => {
@@ -97,11 +117,13 @@ export const useAuth = () => {
     signup: signupMutation.mutate,
     onboardFarmer: onboardFarmerMutation.mutate,
     onboardCompany: onboardCompanyMutation.mutate,
+    onboardLogistics: onboardLogisticsMutation.mutate,
     updateFarmerProfile: updateFarmerMutation.mutate,
     updateCompanyProfile: updateCompanyMutation.mutate,
+    updateLogisticsProfile: updateLogisticsMutation.mutate,
     user: userQuery.data,
-    isLoading: loginMutation.isPending || signupMutation.isPending || onboardFarmerMutation.isPending || onboardCompanyMutation.isPending || updateFarmerMutation.isPending || updateCompanyMutation.isPending || userQuery.isLoading,
-    error: loginMutation.error || signupMutation.error || onboardFarmerMutation.error || onboardCompanyMutation.error || updateFarmerMutation.error || updateCompanyMutation.error,
+    isLoading: loginMutation.isPending || signupMutation.isPending || onboardFarmerMutation.isPending || onboardCompanyMutation.isPending || onboardLogisticsMutation.isPending || updateFarmerMutation.isPending || updateCompanyMutation.isPending || updateLogisticsMutation.isPending || userQuery.isLoading,
+    error: loginMutation.error || signupMutation.error || onboardFarmerMutation.error || onboardCompanyMutation.error || onboardLogisticsMutation.error || updateFarmerMutation.error || updateCompanyMutation.error || updateLogisticsMutation.error,
     logout,
-  }), [loginMutation.mutate, signupMutation.mutate, onboardFarmerMutation.mutate, onboardCompanyMutation.mutate, updateFarmerMutation.mutate, updateCompanyMutation.mutate, userQuery.data, loginMutation.isPending, signupMutation.isPending, onboardFarmerMutation.isPending, onboardCompanyMutation.isPending, updateFarmerMutation.isPending, updateCompanyMutation.isPending, userQuery.isLoading, loginMutation.error, signupMutation.error, onboardFarmerMutation.error, onboardCompanyMutation.error, updateFarmerMutation.error, updateCompanyMutation.error]);
+  }), [loginMutation.mutate, signupMutation.mutate, onboardFarmerMutation.mutate, onboardCompanyMutation.mutate, onboardLogisticsMutation.mutate, updateFarmerMutation.mutate, updateCompanyMutation.mutate, updateLogisticsMutation.mutate, userQuery.data, loginMutation.isPending, signupMutation.isPending, onboardFarmerMutation.isPending, onboardCompanyMutation.isPending, onboardLogisticsMutation.isPending, updateFarmerMutation.isPending, updateCompanyMutation.isPending, updateLogisticsMutation.isPending, userQuery.isLoading, loginMutation.error, signupMutation.error, onboardFarmerMutation.error, onboardCompanyMutation.error, onboardLogisticsMutation.error, updateFarmerMutation.error, updateCompanyMutation.error, updateLogisticsMutation.error]);
 };

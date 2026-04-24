@@ -2,8 +2,8 @@ import { prisma } from "../../lib/prisma.js";
 import { createFarmerType, updateFarmerType } from "./farmer.schema.js";
 
 class FarmerServices {
-  async create(
-    {
+  async create(data: createFarmerType, userId: number) {
+    const {
       farm_name,
       farm_address,
       city,
@@ -11,9 +11,7 @@ class FarmerServices {
       latitude,
       longitude,
       land_size_acres,
-    }: createFarmerType,
-    userId: number,
-  ) {
+    } = data;
     const farmer = await prisma.farmerProfile.findUnique({
       where: {
         farmer_id: userId,
@@ -34,6 +32,9 @@ class FarmerServices {
         latitude,
         longitude,
         land_size_acres,
+        account_number: data.account_number,
+        ifsc: data.ifsc,
+        bank_name: data.bank_name,
       },
     });
 

@@ -17,6 +17,9 @@ export const farmSchema = z.object({
     .max(180, "Longitude must be <= 180"),
 
   land_size_acres: z.number().positive("Land size must be positive"),
+  account_number: z.string().optional(),
+  ifsc: z.string().optional(),
+  bank_name: z.string().optional(),
 });
 
 export const createFarmSchema = farmSchema;

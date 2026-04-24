@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
 export default function LogisticsProfile() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, updateLogisticsProfile, onboardLogistics } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -35,7 +35,11 @@ export default function LogisticsProfile() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic for updating profile would go here
+    if (profile) {
+      updateLogisticsProfile(formData);
+    } else {
+      onboardLogistics(formData);
+    }
     setIsEditing(false);
   };
 

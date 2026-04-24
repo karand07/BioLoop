@@ -10,6 +10,9 @@ export const logisticsSchema = z.object({
       "Invalid vehicle number format",
     ),
   service_area: z.string().min(1, "Service area is required"),
+  account_number: z.string().optional(),
+  ifsc: z.string().optional(),
+  bank_name: z.string().optional(),
 });
 
 export const createLogisticsSchema = logisticsSchema;
