@@ -80,13 +80,37 @@ getAllOrders = async (req: Request, res: Response) => {
   });
 };
 
-getDashboardStats = async (req: Request, res: Response) => {
-  const stats = await adminServices.getDashboardStats();
-  return res.status(200).json({
-    message: "Dashboard stats fetched successfully",
-    data: stats,
-  });
-};  
+  getDashboardStats = async (req: Request, res: Response) => {
+    const stats = await adminServices.getDashboardStats();
+    return res.status(200).json({
+      message: "Dashboard stats fetched successfully",
+      data: stats,
+    });
+  };
+
+  getPlatformSettings = async (req: Request, res: Response) => {
+    try {
+      const settings = await adminServices.getPlatformSettings();
+      return res.status(200).json({
+        message: "Platform settings fetched successfully",
+        data: settings,
+      });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
+  updatePlatformSettings = async (req: Request, res: Response) => {
+    try {
+      const settings = await adminServices.updatePlatformSettings(req.body);
+      return res.status(200).json({
+        message: "Platform settings updated successfully",
+        data: settings,
+      });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
 }
 
 export const adminController = new AdminController();

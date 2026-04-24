@@ -8,6 +8,8 @@ class OrderServices {
     const orders = await prisma.order.findMany({
       where,
       include: {
+        farmer: true,
+        company: true,
         request: {
           include: {
             listing: { include: { category: true } },
@@ -25,6 +27,8 @@ class OrderServices {
     const order = await prisma.order.findUnique({
       where: { order_id },
       include: {
+        farmer: true,
+        company: true,
         request: {
           include: {
             listing: { include: { category: true } },

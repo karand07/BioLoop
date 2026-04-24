@@ -119,6 +119,8 @@ async getAllOrders(status?: string) {
   const orders = await prisma.order.findMany({
     where: status ? { status: status as any } : {},
     include: {
+      farmer: true,
+      company: true,
       request: {
         include: {
           listing: { include: { category: true } },
@@ -164,6 +166,37 @@ async getDashboardStats() {
     orders: { total: totalOrders, completed: completedOrders, disputed: disputedOrders },
     revenue: { total: totalRevenue._sum.amount ?? 0 },
   };
+}
+
+async getPlatformSettings() {
+  let settings = await prisma.platformSettings.findFirst();
+  if (!settings) {
+    settings = await prisma.platformSettings.create({
+      data: {
+        commission_rate: 5.00,
+        min_order_value: 500.00,
+        base_logistics_rate: 50.00,
+      },
+    });
+  }
+  return settings;
+}
+
+async updatePlatformSettings(data: any) {
+  const settings = await prisma.platformSettings.findFirst();
+  if (!settings) {
+    return await prisma.platformSettings.create({
+      data: {
+        ...data
+      }
+    });
+  }
+  return await prisma.platformSettings.update({
+    where: { id: settings.id },
+    data: {
+      ...data
+    }
+  });
 }
 }
 

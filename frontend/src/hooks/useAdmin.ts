@@ -68,6 +68,24 @@ export const useAdmin = () => {
     },
   });
 
+  const platformSettingsQuery = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: async () => {
+      const response = await api.get('/admin/settings');
+      return response.data.data;
+    },
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.patch('/admin/settings', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
+    },
+  });
+
   return {
     stats: dashboardStatsQuery.data,
     isStatsLoading: dashboardStatsQuery.isLoading,
@@ -75,10 +93,13 @@ export const useAdmin = () => {
     isUsersLoading: allUsersQuery.isLoading,
     orders: allOrdersQuery.data || [],
     isOrdersLoading: allOrdersQuery.isLoading,
+    settings: platformSettingsQuery.data,
+    isSettingsLoading: platformSettingsQuery.isLoading,
     verifyUser: verifyUserMutation.mutate,
     blockUser: blockUserMutation.mutate,
     createCategory: createCategoryMutation.mutate,
     deleteCategory: deleteCategoryMutation.mutate,
-    isMutating: verifyUserMutation.isPending || blockUserMutation.isPending || createCategoryMutation.isPending || deleteCategoryMutation.isPending,
+    updateSettings: updateSettingsMutation.mutate,
+    isMutating: verifyUserMutation.isPending || blockUserMutation.isPending || createCategoryMutation.isPending || deleteCategoryMutation.isPending || updateSettingsMutation.isPending,
   };
 };

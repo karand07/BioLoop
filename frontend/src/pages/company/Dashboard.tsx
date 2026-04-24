@@ -1,10 +1,12 @@
-import {  ShoppingBag, MessageSquare, IndianRupee, TrendingUp, Package, Clock, ArrowUpRight, ArrowRight, Loader2, Building2 } from 'lucide-react';
+import { ShoppingBag, MessageSquare, IndianRupee, TrendingUp, Package, Clock, ArrowUpRight, ArrowRight, Loader2, Building2 } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
+import { useWaste } from '../../hooks/useWaste';
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
 export default function CompanyDashboard() {
   const { orders, myRequests, isOrdersLoading, isMyRequestsLoading } = useOrders();
+  const { categories, isListingsLoading: isWasteLoading } = useWaste();
 
   const totalSpent = orders.reduce((acc: number, order: any) => acc + parseFloat(order.total_amount), 0);
   const activeOrders = orders.filter((o: any) => o.status !== 'closed' && o.status !== 'delivered');
@@ -18,7 +20,7 @@ export default function CompanyDashboard() {
     { label: 'Pending Proposals', value: pendingRequests.length, icon: MessageSquare, color: 'text-amber-600', bg: 'bg-amber-50' },
   ];
 
-  if (isOrdersLoading || isMyRequestsLoading) {
+  if (isOrdersLoading || isMyRequestsLoading || isWasteLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
@@ -47,10 +49,6 @@ export default function CompanyDashboard() {
             <div className="flex items-start justify-between mb-4">
               <div className={cn("p-4 rounded-2xl transition-transform group-hover:scale-110", stat.bg, stat.color)}>
                 <stat.icon className="w-6 h-6" />
-              </div>
-              <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold">
-                <TrendingUp className="w-3 h-3" />
-                +12%
               </div>
             </div>
             <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">{stat.label}</p>
@@ -142,18 +140,14 @@ export default function CompanyDashboard() {
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
              <h4 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-widest">Market Status</h4>
              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                   <span className="text-slate-500 text-sm">Rice Husk</span>
-                   <span className="text-emerald-600 text-sm font-bold flex items-center gap-1">
-                      <TrendingUp className="w-4 h-4" /> ₹4.2/kg
-                   </span>
-                </div>
-                <div className="flex items-center justify-between">
-                   <span className="text-slate-500 text-sm">Sugarcane Bagasse</span>
-                   <span className="text-emerald-600 text-sm font-bold flex items-center gap-1">
-                      <TrendingUp className="w-4 h-4" /> ₹3.8/kg
-                   </span>
-                </div>
+                {categories.slice(0, 4).map((cat: any) => (
+                  <div key={cat.category_id} className="flex items-center justify-between">
+                    <span className="text-slate-500 text-sm font-medium">{cat.name}</span>
+                    <span className="text-emerald-600 text-sm font-bold flex items-center gap-1">
+                        <TrendingUp className="w-4 h-4" /> ₹{cat.min_ref_price}/ {cat.unit}
+                    </span>
+                  </div>
+                ))}
              </div>
           </div>
         </div>

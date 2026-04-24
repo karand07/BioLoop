@@ -1,7 +1,8 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { ShoppingBag, IndianRupee, Truck, Loader2, Building2, MapPin, Clock, CheckCircle2, Calendar, X, Package } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { useAuth } from '../../hooks/useAuth';
+import { useSystem } from '../../hooks/useSystem';
 import { cn } from '../../lib/utils';
 
 const orderStatusColors: Record<string, string> = {
@@ -13,6 +14,7 @@ const orderStatusColors: Record<string, string> = {
 
 export default function CompanyOrders() {
   const { orders, isOrdersLoading, confirmSlot, isConfirming, initiatePayment, isInitiatingPayment, verifyPayment, confirmDelivery, isConfirmingDelivery } = useOrders();
+  const { settings } = useSystem();
   const { user } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [viewingSummary, setViewingSummary] = useState<any>(null);
@@ -267,7 +269,7 @@ export default function CompanyOrders() {
                       <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
                          <CheckCircle2 className="w-5 h-5" />
                       </div>
-                      <span className="text-sm font-bold text-slate-600">Platform Commission (3%)</span>
+                      <span className="text-sm font-bold text-slate-600">Platform Commission ({settings?.commission_rate || '5.0'}%)</span>
                    </div>
                    <span className="font-black text-slate-900 flex items-center gap-1">
                       <IndianRupee className="w-3.5 h-3.5" />

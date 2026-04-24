@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, Truck, Loader2, Edit3, Save, X, ShieldCheck, MapPin, CreditCard, Building2, User } from 'lucide-react';
+import { Mail, Phone, Truck, Loader2, Edit3, Save, X, MapPin, CreditCard, Building2, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
@@ -128,15 +128,6 @@ export default function LogisticsProfile() {
                   </div>
                </div>
             </div>
-          </div>
-
-          <div className="bg-emerald-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-emerald-100">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-             <div className="relative space-y-4">
-                <ShieldCheck className="w-10 h-10 text-white/50" />
-                <h4 className="text-xl font-black tracking-tight">Verified Fleet</h4>
-                <p className="text-sm text-emerald-50 text-medium opacity-90">Your documents are verified. You are eligible for high-value hazardous waste shipments.</p>
-             </div>
           </div>
         </div>
 

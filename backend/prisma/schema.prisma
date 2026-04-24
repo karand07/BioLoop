@@ -281,3 +281,12 @@ model Notification {
 
   user Users @relation(fields: [user_id], references: [id])
 }
+
+model PlatformSettings {
+  id                  Int      @id @default(1)
+  commission_rate     Decimal  @db.Decimal(5, 2) @default(5.00)
+  min_order_value     Decimal  @db.Decimal(10, 2) @default(500.00)
+  base_logistics_rate Decimal  @db.Decimal(10, 2) @default(50.00) // per km
+  is_maintenance_mode Boolean  @default(false)
+  updated_at          DateTime @updatedAt
+}
