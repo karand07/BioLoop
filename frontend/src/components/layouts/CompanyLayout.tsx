@@ -1,19 +1,22 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import {  ShoppingBag,  MessageSquare, LogOut, Leaf, User, Search, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 import { cn } from '../../lib/utils';
 
-const navItems = [
-  { name: 'Dashboard', href: '/company/dashboard', icon: LayoutDashboard },
-  { name: 'Marketplace', href: '/company/marketplace', icon: Search },
-  { name: 'My Requests', href: '/company/requests', icon: MessageSquare },
-  { name: 'My Orders', href: '/company/orders', icon: ShoppingBag },
-  { name: 'Profile', href: '/company/profile', icon: User },
-];
-
 export default function CompanyLayout() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { user, logout } = useAuth();
+
+  const navItems = [
+    { name: t('dashboard'), href: '/company/dashboard', icon: LayoutDashboard },
+    { name: t('marketplace'), href: '/company/marketplace', icon: Search },
+    { name: t('my_requests'), href: '/company/requests', icon: MessageSquare },
+    { name: t('my_orders'), href: '/company/orders', icon: ShoppingBag },
+    { name: t('profile'), href: '/company/profile', icon: User },
+  ];
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -31,7 +34,7 @@ export default function CompanyLayout() {
             const isActive = location.pathname === item.href;
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group",
@@ -56,7 +59,7 @@ export default function CompanyLayout() {
               {user?.company_profile?.company_name?.charAt(0) || 'C'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold truncate text-white">{user?.company_profile?.company_name || 'Loading...'}</p>
+              <p className="text-sm font-bold truncate text-white">{user?.company_profile?.company_name || t('loading')}</p>
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest truncate">{user?.email}</p>
             </div>
           </div>
@@ -65,7 +68,7 @@ export default function CompanyLayout() {
             className="w-full flex items-center gap-3 px-4 py-4 mt-2 rounded-2xl text-slate-500 hover:text-white hover:bg-red-500/10 transition-all group font-bold text-sm"
           >
             <LogOut className="w-5 h-5 group-hover:text-red-400 transition-colors" />
-            Logout
+            {t('logout')}
           </button>
         </div>
       </aside>
@@ -74,11 +77,12 @@ export default function CompanyLayout() {
       <main className="ml-64 flex-1">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-10 sticky top-0 z-40">
           <h2 className="text-xl font-bold text-slate-800">
-            {navItems.find(item => item.href === location.pathname)?.name || 'Marketplace'}
+            {navItems.find(item => item.href === location.pathname)?.name || t('marketplace')}
           </h2>
           <div className="flex items-center gap-6">
+            <LanguageSwitcher />
             <div className="bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-              Buyer Portal
+              {t('buyer_portal')}
             </div>
           </div>
         </header>

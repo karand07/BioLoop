@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, ShieldCheck, Building, Loader2, Edit3, Save, X, Navigation, Ruler, CheckCircle2, Leaf } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 export default function FarmerProfile() {
+  const { t } = useTranslation();
   const { user, isLoading, updateFarmerProfile, onboardFarmer } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   
@@ -66,10 +68,10 @@ export default function FarmerProfile() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
-            {!farmer ? 'Complete Your Profile' : isEditing ? 'Edit Profile' : 'My Profile'}
+            {!farmer ? t('complete_profile') : isEditing ? t('edit_profile') : t('my_profile')}
           </h1>
           <p className="text-slate-500 mt-1">
-            {!farmer ? 'Please provide your farm details to get started.' : 'Manage your farm and account information.'}
+            {!farmer ? t('onboarding_desc') : t('profile_desc')}
           </p>
         </div>
         {!isEditing && (
@@ -78,7 +80,7 @@ export default function FarmerProfile() {
             className="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
           >
             <Edit3 className="w-5 h-5 text-emerald-500" />
-            Edit Details
+            {t('edit_details')}
           </button>
         )}
       </div>
@@ -91,8 +93,8 @@ export default function FarmerProfile() {
             <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl font-bold transition-transform group-hover:scale-105 duration-300">
               {formData.farm_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <h3 className="text-xl font-bold text-slate-900">{formData.farm_name || 'BioLoop Farmer'}</h3>
-            <p className="text-emerald-600 text-xs font-bold uppercase tracking-widest mt-1">Farmer Partner</p>
+            <h3 className="text-xl font-bold text-slate-900">{formData.farm_name || t('bio_loop_farmer')}</h3>
+            <p className="text-emerald-600 text-xs font-bold uppercase tracking-widest mt-1">{t('farmer_partner')}</p>
             
             <div className="mt-8 pt-8 border-t border-slate-50 space-y-4 text-left">
               <div className="flex items-center gap-3 text-slate-600">
@@ -100,7 +102,7 @@ export default function FarmerProfile() {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Email Address</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('email_address')}</p>
                   <p className="text-sm font-bold truncate text-slate-700">{user?.email}</p>
                 </div>
               </div>
@@ -109,14 +111,14 @@ export default function FarmerProfile() {
                   <Phone className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Phone Number</p>
-                  <p className="text-sm font-bold text-slate-700">{user?.phone || 'Not provided'}</p>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t('phone_number')}</p>
+                  <p className="text-sm font-bold text-slate-700">{user?.phone || t('not_provided')}</p>
                 </div>
               </div>
               {user?.is_verified && (
                 <div className="flex items-center gap-3 text-emerald-600 font-bold bg-emerald-50/50 px-4 py-2 rounded-2xl border border-emerald-100">
                   <ShieldCheck className="w-5 h-5" />
-                  <span className="text-xs uppercase tracking-widest">Verified Partner</span>
+                  <span className="text-xs uppercase tracking-widest">{t('verified_partner')}</span>
                 </div>
               )}
             </div>
@@ -125,9 +127,9 @@ export default function FarmerProfile() {
           {/* Quick Stats or Tips */}
           <div className="bg-emerald-900 text-white p-8 rounded-3xl shadow-lg shadow-emerald-100 relative overflow-hidden">
              <Leaf className="absolute -right-4 -bottom-4 w-32 h-32 text-emerald-800/50 rotate-12" />
-             <h4 className="text-lg font-bold mb-2 relative z-10">Eco Tip</h4>
+             <h4 className="text-lg font-bold mb-2 relative z-10">{t('eco_tip')}</h4>
              <p className="text-emerald-100/80 text-sm leading-relaxed relative z-10">
-               Accurate farm location helps logistics partners reach you faster, reducing carbon footprint.
+               {t('eco_tip_desc')}
              </p>
           </div>
         </div>
@@ -145,35 +147,35 @@ export default function FarmerProfile() {
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                     <Building className="w-5 h-5" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">Farm Location & Info</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{t('farm_location_info')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Farm Name</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('farm_name')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
                       value={formData.farm_name}
                       onChange={(e) => setFormData({ ...formData, farm_name: e.target.value })}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60 disabled:bg-slate-50/50"
-                      placeholder="Green Valley Estate"
+                      placeholder={t('farm_name_placeholder')}
                     />
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Farm Address</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('farm_address')}</label>
                     <textarea
                       disabled={!isEditing}
                       value={formData.farm_address}
                       onChange={(e) => setFormData({ ...formData, farm_address: e.target.value })}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60 min-h-[80px]"
-                      placeholder="123 Farm Road, Sector 4..."
+                      placeholder={t('farm_address_placeholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">City</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('city')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -184,7 +186,7 @@ export default function FarmerProfile() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">State</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('state')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -202,7 +204,7 @@ export default function FarmerProfile() {
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                       <Navigation className="w-4 h-4 text-emerald-500" />
-                      Latitude
+                      {t('latitude')}
                     </label>
                     <input
                       type="number"
@@ -216,7 +218,7 @@ export default function FarmerProfile() {
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                       <Navigation className="w-4 h-4 text-emerald-500" />
-                      Longitude
+                      {t('longitude')}
                     </label>
                     <input
                       type="number"
@@ -230,7 +232,7 @@ export default function FarmerProfile() {
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                       <Ruler className="w-4 h-4 text-emerald-500" />
-                      Land (Acres)
+                      {t('land_acres')}
                     </label>
                     <input
                       type="number"
@@ -250,23 +252,23 @@ export default function FarmerProfile() {
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                     <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">Bank Details for Payouts</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{t('bank_details_payouts')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Bank Name</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('bank_name')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
                       value={formData.bank_name}
                       onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
                       className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                      placeholder="e.g. State Bank of India"
+                      placeholder={t('bank_name_placeholder')}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Account Number</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('account_number')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -276,7 +278,7 @@ export default function FarmerProfile() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">IFSC Code</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('ifsc_code')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -297,7 +299,7 @@ export default function FarmerProfile() {
                       className="flex-1 py-4 px-6 border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                     >
                       <X className="w-5 h-5" />
-                      Cancel
+                      {t('cancel')}
                     </button>
                   )}
                   <button
@@ -305,7 +307,7 @@ export default function FarmerProfile() {
                     className="flex-[2] bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     <Save className="w-5 h-5" />
-                    {farmer ? 'Save Changes' : 'Complete Registration'}
+                    {farmer ? t('save') : t('complete_registration')}
                   </button>
                 </div>
               )}
@@ -318,8 +320,8 @@ export default function FarmerProfile() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-bold text-emerald-900">Your profile is up to date</h4>
-                <p className="text-emerald-700/70 text-sm">Update your details anytime by clicking "Edit Details" above.</p>
+                <h4 className="font-bold text-emerald-900">{t('profile_up_to_date')}</h4>
+                <p className="text-emerald-700/70 text-sm">{t('profile_update_hint')}</p>
               </div>
             </div>
           )}

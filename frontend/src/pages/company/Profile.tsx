@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, Building, Loader2, Edit3, Save, X, Navigation } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 export default function CompanyProfile() {
+  const { t } = useTranslation();
   const { user, isLoading, updateCompanyProfile, onboardCompany } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   
@@ -56,9 +58,9 @@ export default function CompanyProfile() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
-            {!company ? 'Complete Business Profile' : isEditing ? 'Edit Business Info' : 'Business Profile'}
+            {!company ? t('complete_business_profile') : isEditing ? t('edit_business_info') : t('business_profile')}
           </h1>
-          <p className="text-slate-500 mt-1">Manage your company details and sourcing preferences.</p>
+          <p className="text-slate-500 mt-1">{t('company_desc')}</p>
         </div>
         {!isEditing && (
           <button 
@@ -66,7 +68,7 @@ export default function CompanyProfile() {
             className="bg-white border border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
           >
             <Edit3 className="w-5 h-5 text-emerald-500" />
-            Edit Profile
+            {t('edit_profile')}
           </button>
         )}
       </div>
@@ -79,8 +81,8 @@ export default function CompanyProfile() {
             <div className="w-24 h-24 bg-slate-100 text-slate-600 rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl font-bold">
               {formData.company_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'C'}
             </div>
-            <h3 className="text-xl font-bold text-slate-900">{formData.company_name || 'Your Company'}</h3>
-            <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.2em] mt-1">{formData.business_type || 'Industrial Partner'}</p>
+            <h3 className="text-xl font-bold text-slate-900">{formData.company_name || t('your_company')}</h3>
+            <p className="text-emerald-600 text-[10px] font-black uppercase tracking-[0.2em] mt-1">{formData.business_type || t('industrial_partner')}</p>
             
             <div className="mt-8 pt-8 border-t border-slate-50 space-y-4 text-left">
               <div className="flex items-center gap-3 text-slate-600">
@@ -88,7 +90,7 @@ export default function CompanyProfile() {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Work Email</p>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('work_email')}</p>
                   <p className="text-sm font-bold truncate text-slate-900">{user?.email}</p>
                 </div>
               </div>
@@ -97,8 +99,8 @@ export default function CompanyProfile() {
                   <Phone className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Business Phone</p>
-                  <p className="text-sm font-bold text-slate-900">{user?.phone || 'Not provided'}</p>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('business_phone')}</p>
+                  <p className="text-sm font-bold text-slate-900">{user?.phone || t('not_provided')}</p>
                 </div>
               </div>
             </div>
@@ -117,40 +119,40 @@ export default function CompanyProfile() {
                   <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-900">
                     <Building className="w-5 h-5" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">Business Details</h3>
+                  <h3 className="text-lg font-bold text-slate-900">{t('business_details')}</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Company Name</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('company_name_label')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
                       value={formData.company_name}
                       onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
                       className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                      placeholder="e.g. Eco-Cycle Industries"
+                      placeholder={t('company_name_placeholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Business Type</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('business_type_label')}</label>
                     <select
                       disabled={!isEditing}
                       value={formData.business_type}
                       onChange={(e) => setFormData({ ...formData, business_type: e.target.value })}
                       className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60 appearance-none"
                     >
-                      <option value="">Select Type</option>
-                      <option value="Manufacturing">Manufacturing</option>
-                      <option value="Biomass Power">Biomass Power</option>
-                      <option value="Composting">Composting</option>
-                      <option value="Recycling">Recycling</option>
+                      <option value="">{t('select_type')}</option>
+                      <option value="Manufacturing">{t('manufacturing')}</option>
+                      <option value="Biomass Power">{t('biomass_power')}</option>
+                      <option value="Composting">{t('composting')}</option>
+                      <option value="Recycling">{t('recycling')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">GST Number</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('gst_number')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -162,7 +164,7 @@ export default function CompanyProfile() {
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Headquarters Address</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('hq_address')}</label>
                     <textarea
                       disabled={!isEditing}
                       value={formData.address}
@@ -174,7 +176,7 @@ export default function CompanyProfile() {
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                       <Navigation className="w-4 h-4 text-emerald-500" />
-                      Latitude
+                      {t('latitude')}
                     </label>
                     <input
                       type="number"
@@ -189,7 +191,7 @@ export default function CompanyProfile() {
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                       <Navigation className="w-4 h-4 text-emerald-500" />
-                      Longitude
+                      {t('longitude')}
                     </label>
                     <input
                       type="number"
@@ -212,7 +214,7 @@ export default function CompanyProfile() {
                       className="flex-1 py-4 px-6 border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
                     >
                       <X className="w-5 h-5" />
-                      Cancel
+                      {t('cancel')}
                     </button>
                   )}
                   <button
@@ -220,7 +222,7 @@ export default function CompanyProfile() {
                     className="flex-[2] bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     <Save className="w-5 h-5" />
-                    {company ? 'Save Changes' : 'Complete Registration'}
+                    {company ? t('save_changes') : t('complete_registration')}
                   </button>
                 </div>
               )}

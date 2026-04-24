@@ -1,8 +1,10 @@
 import { IndianRupee, TrendingUp, Calendar, ArrowUpRight, CheckCircle2, Clock, Filter, Package, Search } from 'lucide-react';
 import { usePayouts } from '../../hooks/usePayouts';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 export default function FarmerEarnings() {
+  const { t } = useTranslation();
   const { payouts, isPayoutsLoading } = usePayouts();
 
   const totalEarnings = payouts
@@ -14,17 +16,17 @@ export default function FarmerEarnings() {
     .reduce((acc: number, p: any) => acc + Number(p.amount), 0);
 
   const stats = [
-    { label: 'Total Earnings', value: `₹${totalEarnings.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Pending Payouts', value: `₹${pendingPayouts.toLocaleString()}`, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Orders Completed', value: payouts.filter((p: any) => p.status === 'processed').length, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Next Payout', value: 'Auto-Release', icon: Calendar, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { label: t('total_earnings'), value: `₹${totalEarnings.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: t('pending_payouts'), value: `₹${pendingPayouts.toLocaleString()}`, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { label: t('orders_completed'), value: payouts.filter((p: any) => p.status === 'processed').length, icon: Package, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: t('next_payout'), value: t('auto_release'), icon: Calendar, color: 'text-indigo-600', bg: 'bg-indigo-50' },
   ];
 
   if (isPayoutsLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <div className="w-16 h-16 border-4 border-emerald-100 border-t-emerald-500 rounded-full animate-spin" />
-        <p className="text-slate-500 font-bold animate-pulse uppercase tracking-widest text-[10px]">Fetching Financial Records...</p>
+        <p className="text-slate-500 font-bold animate-pulse uppercase tracking-widest text-[10px]">{t('fetching_financials')}</p>
       </div>
     );
   }
@@ -35,18 +37,18 @@ export default function FarmerEarnings() {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-[0.3em] mb-2">
             <IndianRupee className="w-3 h-3" />
-            Wallet & Revenue
+            {t('wallet_revenue')}
           </div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-            Earnings <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">Overview</span>
+            {t('earnings')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">{t('overview')}</span>
           </h1>
-          <p className="text-slate-500 font-medium">Track your revenue and manage your payout history.</p>
+          <p className="text-slate-500 font-medium">{t('earnings_desc')}</p>
         </div>
         
         <div className="flex items-center gap-3">
            <button className="bg-white border border-slate-200 text-slate-900 px-6 py-3 rounded-2xl font-bold text-sm hover:bg-slate-50 transition-all flex items-center gap-2">
               <Calendar className="w-4 h-4 text-emerald-500" />
-              Download Report
+              {t('download_report')}
            </button>
         </div>
       </div>
@@ -68,14 +70,14 @@ export default function FarmerEarnings() {
          <div className="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
                <TrendingUp className="w-6 h-6 text-emerald-500" />
-               Transaction History
+               {t('transaction_history')}
             </h3>
             <div className="flex items-center gap-4">
                <div className="relative flex-1 md:w-64">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
                     type="text" 
-                    placeholder="Search transactions..."
+                    placeholder={t('search_transactions')}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                </div>
@@ -89,11 +91,11 @@ export default function FarmerEarnings() {
             <table className="w-full text-left border-collapse">
                <thead>
                   <tr className="bg-slate-50/50">
-                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Order ID</th>
-                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</th>
-                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Amount</th>
-                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Action</th>
+                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('order_id_label')}</th>
+                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('date')}</th>
+                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('amount')}</th>
+                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('status')}</th>
+                     <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('action_label')}</th>
                   </tr>
                </thead>
                <tbody className="divide-y divide-slate-50">
@@ -104,8 +106,8 @@ export default function FarmerEarnings() {
                               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center">
                                  <IndianRupee className="w-8 h-8 text-slate-200" />
                               </div>
-                              <p className="text-slate-500 font-bold">No transactions found</p>
-                              <p className="text-xs text-slate-400">Complete deliveries to start seeing payouts here.</p>
+                              <p className="text-slate-500 font-bold">{t('no_transactions_found')}</p>
+                              <p className="text-xs text-slate-400">{t('complete_deliveries_desc')}</p>
                            </div>
                         </td>
                      </tr>
@@ -114,11 +116,7 @@ export default function FarmerEarnings() {
                         <tr key={payout.payout_id} className="hover:bg-slate-50/50 transition-all group">
                            <td className="px-8 py-6 font-bold text-slate-900 text-sm">#{payout.order_id}</td>
                            <td className="px-8 py-6 text-sm text-slate-500 font-medium">
-                              {new Date(payout.processed_at || payout.created_at).toLocaleDateString('en-IN', {
-                                 day: '2-digit',
-                                 month: 'short',
-                                 year: 'numeric'
-                              })}
+                              {new Date(payout.processed_at || payout.created_at).toLocaleDateString()}
                            </td>
                            <td className="px-8 py-6">
                               <span className="text-sm font-black text-slate-900">₹{Number(payout.amount).toLocaleString()}</span>
@@ -131,19 +129,19 @@ export default function FarmerEarnings() {
                                  {payout.status === 'processed' ? (
                                     <>
                                        <CheckCircle2 className="w-3 h-3" />
-                                       Released
+                                       {t('released')}
                                     </>
                                  ) : (
                                     <>
                                        <Clock className="w-3 h-3" />
-                                       Escrow
+                                       {t('escrow')}
                                     </>
                                  )}
                               </div>
                            </td>
                            <td className="px-8 py-6">
                               <button className="text-emerald-600 font-bold text-xs flex items-center gap-1 hover:underline">
-                                 Invoice
+                                 {t('invoice')}
                                  <ArrowUpRight className="w-3 h-3" />
                               </button>
                            </td>

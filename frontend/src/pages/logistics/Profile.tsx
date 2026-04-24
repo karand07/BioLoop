@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Mail, Phone, Truck, Loader2, Edit3, Save, X, MapPin, CreditCard, Building2, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 
 export default function LogisticsProfile() {
+  const { t } = useTranslation();
   const { user, isLoading, updateLogisticsProfile, onboardLogistics } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   
@@ -47,7 +49,7 @@ export default function LogisticsProfile() {
     return (
       <div className="flex flex-col items-center justify-center py-32 space-y-4">
         <Loader2 className="w-12 h-12 animate-spin text-emerald-500" />
-        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Loading Fleet Profile...</p>
+        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">{t('loading_data')}</p>
       </div>
     );
   }
@@ -58,12 +60,12 @@ export default function LogisticsProfile() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-[0.3em] mb-2">
-            Partner Settings
+            {t('partner_settings')}
           </div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-            Fleet <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">Configuration</span>
+            {t('fleet_config').split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">{t('fleet_config').split(' ')[1]}</span>
           </h1>
-          <p className="text-slate-500 font-medium">Keep your vehicle and payout details updated for seamless operations.</p>
+          <p className="text-slate-500 font-medium">{t('fleet_config_desc')}</p>
         </div>
         {!isEditing && (
           <button 
@@ -71,7 +73,7 @@ export default function LogisticsProfile() {
             className="bg-white border border-slate-200 text-slate-900 px-8 py-4 rounded-[1.5rem] font-black text-sm flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm hover:shadow-md active:scale-95"
           >
             <Edit3 className="w-5 h-5 text-emerald-500" />
-            Edit Profile
+            {t('edit_profile')}
           </button>
         )}
       </div>
@@ -91,11 +93,11 @@ export default function LogisticsProfile() {
                   </div>
                </div>
                
-               <h3 className="text-2xl font-black text-slate-900 tracking-tight">{formData.vehicle_number || 'New Partner'}</h3>
+               <h3 className="text-2xl font-black text-slate-900 tracking-tight">{formData.vehicle_number || t('new_partner')}</h3>
                <div className="flex items-center justify-center gap-2 mt-1">
-                  <span className="text-emerald-600 text-[10px] font-black uppercase tracking-widest">{formData.vehicle_type || 'Unregistered'}</span>
+                  <span className="text-emerald-600 text-[10px] font-black uppercase tracking-widest">{formData.vehicle_type ? t(formData.vehicle_type + '_capacity') : t('unregistered')}</span>
                   <div className="w-1 h-1 rounded-full bg-slate-200" />
-                  <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">Active Partner</span>
+                  <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{t('active_partner')}</span>
                </div>
 
                <div className="mt-10 space-y-4 text-left">
@@ -104,7 +106,7 @@ export default function LogisticsProfile() {
                         <User className="w-5 h-5" />
                      </div>
                      <div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Partner Name</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('partner_name')}</p>
                         <p className="text-sm font-bold text-slate-900">{user?.name}</p>
                      </div>
                   </div>
@@ -113,7 +115,7 @@ export default function LogisticsProfile() {
                         <Mail className="w-5 h-5" />
                      </div>
                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Contact Email</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('contact_email')}</p>
                         <p className="text-sm font-bold text-slate-900 truncate">{user?.email}</p>
                      </div>
                   </div>
@@ -122,7 +124,7 @@ export default function LogisticsProfile() {
                         <Phone className="w-5 h-5" />
                      </div>
                      <div>
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Support Line</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('support_line')}</p>
                         <p className="text-sm font-bold text-slate-900">{user?.phone || 'Not Verified'}</p>
                      </div>
                   </div>
@@ -145,14 +147,14 @@ export default function LogisticsProfile() {
                     <Truck className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Fleet Specifications</h3>
-                    <p className="text-sm text-slate-400 font-medium">Configure your vehicle type and logistics coverage.</p>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{t('fleet_specs')}</h3>
+                    <p className="text-sm text-slate-400 font-medium">{t('fleet_specs_desc')}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Vehicle Plate Number</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t('vehicle_plate')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -164,22 +166,22 @@ export default function LogisticsProfile() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Vehicle Classification</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t('vehicle_classification')}</label>
                     <select
                       disabled={!isEditing}
                       value={formData.vehicle_type}
                       onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}
                       className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none disabled:opacity-60 transition-all font-bold text-slate-900 appearance-none"
                     >
-                      <option value="">Select Capacity</option>
-                      <option value="small">Light (Pickup/Lister)</option>
-                      <option value="medium">Medium (6-10 Wheeler)</option>
-                      <option value="large">Heavy (12+ Wheeler/Trailer)</option>
+                      <option value="">{t('select_capacity')}</option>
+                      <option value="small">{t('light_capacity')}</option>
+                      <option value="medium">{t('medium_capacity')}</option>
+                      <option value="large">{t('heavy_capacity')}</option>
                     </select>
                   </div>
 
                   <div className="md:col-span-2 space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Operational Zone</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t('operational_zone')}</label>
                     <div className="relative">
                       <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                       <input
@@ -202,14 +204,14 @@ export default function LogisticsProfile() {
                     <CreditCard className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Settlement Account</h3>
-                    <p className="text-sm text-slate-400 font-medium">Earnings will be settled to this bank account.</p>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{t('settlement_account')}</h3>
+                    <p className="text-sm text-slate-400 font-medium">{t('settlement_account_desc')}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                    <div className="md:col-span-2 space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Institution Name</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t('institution_name')}</label>
                     <div className="relative">
                        <Building2 className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
                        <input
@@ -223,7 +225,7 @@ export default function LogisticsProfile() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Account Number</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t('account_number_label')}</label>
                     <input
                       type="password"
                       disabled={!isEditing}
@@ -233,7 +235,7 @@ export default function LogisticsProfile() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Bank Identifier (IFSC)</label>
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">{t('ifsc_label')}</label>
                     <input
                       type="text"
                       disabled={!isEditing}
@@ -255,7 +257,7 @@ export default function LogisticsProfile() {
                       className="flex-1 py-4 px-8 border border-slate-200 text-slate-600 font-black text-sm rounded-[1.5rem] hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
                     >
                       <X className="w-5 h-5" />
-                      Discard Changes
+                      {t('discard_changes')}
                     </button>
                   )}
                   <button
@@ -263,7 +265,7 @@ export default function LogisticsProfile() {
                     className="flex-[2] bg-slate-900 hover:bg-emerald-600 text-white font-black text-sm py-4 px-8 rounded-[1.5rem] shadow-xl shadow-slate-200 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
                   >
                     <Save className="w-5 h-5" />
-                    {profile ? 'Commit Changes' : 'Register Vehicle'}
+                    {profile ? t('commit_changes') : t('register_vehicle')}
                   </button>
                 </div>
               )}

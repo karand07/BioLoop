@@ -1,17 +1,20 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Truck,  LogOut, User, MapPin, IndianRupee } from 'lucide-react';
+import { LayoutDashboard, Truck, LogOut, User, MapPin, IndianRupee } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 
 const navItems = [
-  { name: 'Dashboard', href: '/logistics/dashboard', icon: LayoutDashboard },
-  { name: 'Find Shipments', href: '/logistics/find', icon: MapPin },
-  { name: 'My Deliveries', href: '/logistics/deliveries', icon: Truck },
-  { name: 'Earnings', href: '/logistics/earnings', icon: IndianRupee },
-  { name: 'Profile', href: '/logistics/profile', icon: User },
+  { name: 'dashboard', href: '/logistics/dashboard', icon: LayoutDashboard },
+  { name: 'find_shipments', href: '/logistics/find', icon: MapPin },
+  { name: 'deliveries', href: '/logistics/deliveries', icon: Truck },
+  { name: 'earnings', href: '/logistics/earnings', icon: IndianRupee },
+  { name: 'profile', href: '/logistics/profile', icon: User },
 ];
 
 export default function LogisticsLayout() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { user, logout } = useAuth();
 
@@ -44,7 +47,7 @@ export default function LogisticsLayout() {
                   "w-5 h-5 transition-colors",
                   isActive ? "text-white" : "text-slate-500 group-hover:text-emerald-400"
                 )} />
-                <span className="font-bold text-sm tracking-wide">{item.name}</span>
+                <span className="font-bold text-sm tracking-wide">{t(item.name)}</span>
               </Link>
             );
           })}
@@ -65,7 +68,7 @@ export default function LogisticsLayout() {
             className="w-full flex items-center gap-3 px-4 py-4 mt-2 rounded-2xl text-slate-500 hover:text-white hover:bg-red-500/10 transition-all group font-bold text-sm"
           >
             <LogOut className="w-5 h-5 group-hover:text-red-400 transition-colors" />
-            Logout
+            {t('logout')}
           </button>
         </div>
       </aside>
@@ -74,11 +77,12 @@ export default function LogisticsLayout() {
       <main className="ml-64 flex-1">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-10 sticky top-0 z-40">
           <h2 className="text-xl font-bold text-slate-800">
-            {navItems.find(item => item.href === location.pathname)?.name || 'Dashboard'}
+            {t(navItems.find(item => item.href === location.pathname)?.name || 'dashboard')}
           </h2>
           <div className="flex items-center gap-6">
+            <LanguageSwitcher />
             <div className="bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-              Logistics Portal
+              {t('logistics_portal_label')}
             </div>
           </div>
         </header>

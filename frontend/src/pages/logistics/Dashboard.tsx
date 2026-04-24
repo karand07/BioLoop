@@ -2,9 +2,11 @@ import { Truck, MapPin, Package, CheckCircle2, IndianRupee, Navigation, ArrowRig
 import { useLogistics } from '../../hooks/useLogistics';
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function LogisticsDashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { availablePickups, myPickups, isAvailableLoading, isMyPickupsLoading, claimPickup } = useLogistics();
 
@@ -12,10 +14,10 @@ export default function LogisticsDashboard() {
   const completedDeliveries = myPickups.filter((p: any) => p.status === 'delivered');
 
   const stats = [
-    { label: 'Active Jobs', value: activeDeliveries.length, icon: Truck, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+2 this week' },
-    { label: 'Completed', value: completedDeliveries.length, icon: CheckCircle2, color: 'text-blue-600', bg: 'bg-blue-50', trend: 'Lifetime' },
-    { label: 'Available', value: availablePickups.length, icon: MapPin, color: 'text-amber-600', bg: 'bg-amber-50', trend: 'In your area' },
-    { label: 'Total Earnings', value: `₹${(completedDeliveries.length * 1200).toLocaleString()}`, icon: IndianRupee, color: 'text-indigo-600', bg: 'bg-indigo-50', trend: 'Escrow: ₹5,400' },
+    { label: t('active_duties'), value: activeDeliveries.length, icon: Truck, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+2 this week' },
+    { label: t('deliveries'), value: completedDeliveries.length, icon: CheckCircle2, color: 'text-blue-600', bg: 'bg-blue-50', trend: 'Lifetime' },
+    { label: t('find_shipments'), value: availablePickups.length, icon: MapPin, color: 'text-amber-600', bg: 'bg-amber-50', trend: 'In your area' },
+    { label: t('earnings'), value: `₹${(completedDeliveries.length * 1200).toLocaleString()}`, icon: IndianRupee, color: 'text-indigo-600', bg: 'bg-indigo-50', trend: 'Escrow: ₹5,400' },
   ];
 
   if (isAvailableLoading || isMyPickupsLoading) {
@@ -37,12 +39,12 @@ export default function LogisticsDashboard() {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-[0.3em] mb-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            System Online • Fleet Node #42
+            {t('system_online')} • Fleet Node #42
           </div>
           <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-            Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">{user?.name?.split(' ')[0]}</span>
+            {t('welcome_back')}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-indigo-600">{user?.name?.split(' ')[0]}</span>
           </h1>
-          <p className="text-slate-500 font-medium">Quick overview of your fleet performance and new opportunities.</p>
+          <p className="text-slate-500 font-medium">{t('fleet_performance')}</p>
         </div>
       </div>
 
@@ -76,10 +78,10 @@ export default function LogisticsDashboard() {
               <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-100">
                 <Truck className="w-5 h-5" />
               </div>
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight">Active Duty</h3>
+              <h3 className="text-2xl font-black text-slate-900 tracking-tight">{t('active_duties')}</h3>
             </div>
             <Link to="/logistics/deliveries" className="text-emerald-600 text-xs font-black uppercase tracking-widest hover:underline flex items-center gap-1">
-              All Deliveries <ArrowRight className="w-3 h-3" />
+              {t('all_deliveries')} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -89,7 +91,7 @@ export default function LogisticsDashboard() {
                 <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
                   <Package className="w-10 h-10 text-slate-200" />
                 </div>
-                <p className="text-xl font-bold text-slate-900">No active cargo</p>
+                <p className="text-xl font-bold text-slate-900">{t('no_active_cargo')}</p>
               </div>
             ) : (
               activeDeliveries.slice(0, 1).map((pickup: any) => (
@@ -119,7 +121,7 @@ export default function LogisticsDashboard() {
                                 <div className="w-0.5 h-12 bg-slate-100" />
                              </div>
                              <div>
-                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Origin</p>
+                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('origin')}</p>
                                 <p className="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">{pickup.pickup_address}</p>
                              </div>
                           </div>
@@ -128,14 +130,14 @@ export default function LogisticsDashboard() {
                                 <Navigation className="w-4 h-4" />
                              </div>
                              <div>
-                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Destination</p>
+                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{t('destination')}</p>
                                 <p className="text-sm font-bold text-slate-900 mt-1 truncate max-w-[200px]">{pickup.delivery_address}</p>
                              </div>
                           </div>
                        </div>
 
                        <div className="bg-slate-50 rounded-3xl p-6 flex flex-col justify-center border border-slate-100">
-                          <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Earnings</p>
+                          <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{t('earnings')}</p>
                           <p className="text-2xl font-black text-slate-900">₹{(pickup.distance_km * 15 + 200).toLocaleString()}</p>
                        </div>
                     </div>
@@ -145,7 +147,7 @@ export default function LogisticsDashboard() {
                          to="/logistics/deliveries"
                          className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all flex items-center justify-center gap-3"
                        >
-                          Open Controls
+                          {t('deliveries')}
                        </Link>
                     </div>
                   </div>
@@ -162,10 +164,10 @@ export default function LogisticsDashboard() {
               <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-100">
                 <MapPin className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight">New Jobs</h3>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">{t('new_opportunities')}</h3>
             </div>
             <Link to="/logistics/find" className="text-emerald-600 text-xs font-black uppercase tracking-widest hover:underline flex items-center gap-1">
-              Find More <ArrowRight className="w-3 h-3" />
+              {t('find_more')} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -188,7 +190,7 @@ export default function LogisticsDashboard() {
                   onClick={() => claimPickup(pickup.order_id)}
                   className="w-full bg-slate-50 text-slate-900 hover:bg-emerald-600 hover:text-white py-3 rounded-xl font-black text-xs transition-all flex items-center justify-center gap-2"
                  >
-                    Claim Job
+                    {t('claim_job')}
                     <ArrowRight className="w-4 h-4" />
                  </button>
               </div>

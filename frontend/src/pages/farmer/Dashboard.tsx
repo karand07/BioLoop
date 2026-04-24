@@ -1,25 +1,27 @@
-import { Package, ShoppingCart, IndianRupee, TrendingUp, ArrowUpRight,Plus, Clock, CheckCircle2, AlertCircle,Leaf } from 'lucide-react';
+import { Package, ShoppingCart, IndianRupee, TrendingUp, Plus, Clock, CheckCircle2, AlertCircle, Leaf, ArrowUpRight } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
 import { useOrders } from '../../hooks/useOrders';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 export default function FarmerDashboard() {
+  const { t } = useTranslation();
   const { myListings, isListingsLoading } = useWaste();
   const { orders, isOrdersLoading, incomingRequests } = useOrders();
 
   // Calculate Stats
-  const activeListings = myListings.filter((l: any) => l.status === 'active').length;
-  const pendingRequests = incomingRequests.filter((r: any) => r.status === 'pending').length;
+  const activeListingsCount = myListings.filter((l: any) => l.status === 'active').length;
+  const pendingRequestsCount = incomingRequests.filter((r: any) => r.status === 'pending').length;
   const totalRevenue = orders
     .filter((o: any) => o.status === 'delivered' || o.status === 'closed')
     .reduce((acc: number, o: any) => acc + parseFloat(o.total_amount), 0);
 
   const stats = [
-    { label: 'Active Listings', value: activeListings, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+12%' },
-    { label: 'Pending Requests', value: pendingRequests, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50', trend: '4 new' },
-    { label: 'Total Orders', value: orders.length, icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50', trend: '+5%' },
-    { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'text-purple-600', bg: 'bg-purple-50', trend: '+20%' },
+    { label: t('active_listings'), value: activeListingsCount, icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+12%' },
+    { label: t('pending_requests'), value: pendingRequestsCount, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50', trend: '4 new' },
+    { label: t('total_orders'), value: orders.length, icon: ShoppingCart, color: 'text-blue-600', bg: 'bg-blue-50', trend: '+5%' },
+    { label: t('total_revenue'), value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'text-purple-600', bg: 'bg-purple-50', trend: '+20%' },
   ];
 
   return (
@@ -27,15 +29,15 @@ export default function FarmerDashboard() {
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Farmer Dashboard</h1>
-          <p className="text-slate-500 mt-1">Here's what's happening with your farm today.</p>
+          <h1 className="text-3xl font-bold text-slate-900">{t('farmer_dashboard')}</h1>
+          <p className="text-slate-500 mt-1">{t('farmer_dashboard_desc')}</p>
         </div>
         <Link 
           to="/farmer/create-listing" 
           className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 transition-all active:scale-[0.98]"
         >
           <Plus className="w-5 h-5" />
-          Create Listing
+          {t('create_listing')}
         </Link>
       </div>
 
@@ -64,19 +66,19 @@ export default function FarmerDashboard() {
         {/* Recent Orders/Requests */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900">Recent Activity</h2>
-            <Link to="/farmer/listings" className="text-sm font-bold text-emerald-600 hover:text-emerald-700">View All</Link>
+            <h2 className="text-xl font-bold text-slate-900">{t('recent_activity')}</h2>
+            <Link to="/farmer/listings" className="text-sm font-bold text-emerald-600 hover:text-emerald-700">{t('view_all')}</Link>
           </div>
           
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
             {isOrdersLoading || isListingsLoading ? (
-              <div className="p-8 text-center text-slate-400">Loading activity...</div>
+              <div className="p-8 text-center text-slate-400">{t('loading_activity')}</div>
             ) : incomingRequests.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="w-12 h-12 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <Clock className="w-6 h-6" />
                 </div>
-                <p className="text-slate-500 text-sm font-medium">No recent requests or orders.</p>
+                <p className="text-slate-500 text-sm font-medium">{t('no_recent_activity')}</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-50">
@@ -88,7 +90,9 @@ export default function FarmerDashboard() {
                       </div>
                       <div>
                         <h4 className="font-bold text-slate-900">{request.company?.company_name || 'New Company'}</h4>
-                        <p className="text-sm text-slate-500">Requested {request.requested_quantity} units of {request.listing?.category?.name}</p>
+                        <p className="text-sm text-slate-500">
+                          {t('requested_units', { quantity: request.requested_quantity, category: request.listing?.category?.name || t('bio_waste') })}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -97,7 +101,7 @@ export default function FarmerDashboard() {
                         "text-[10px] font-bold uppercase tracking-wider mt-1 px-2 py-0.5 rounded-full inline-block",
                         request.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
                       )}>
-                        {request.status}
+                        {t(request.status)}
                       </div>
                     </div>
                   </div>
@@ -109,7 +113,7 @@ export default function FarmerDashboard() {
 
         {/* Quick Tips / Actions */}
         <div className="space-y-6">
-          <h2 className="text-xl font-bold text-slate-900">Quick Actions</h2>
+          <h2 className="text-xl font-bold text-slate-900">{t('quick_actions')}</h2>
           <div className="bg-emerald-900 rounded-3xl p-6 text-white relative overflow-hidden group">
             <div className="relative z-10">
               <h3 className="font-bold text-lg mb-2">Grow your business</h3>

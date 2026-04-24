@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 export default function CreateListing() {
+  const { t } = useTranslation();
   const { categories, createListing, isCreating, createError } = useWaste();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -47,8 +49,8 @@ export default function CreateListing() {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Create New Listing</h1>
-          <p className="text-slate-500 mt-1">List your bio-waste for companies to discover and purchase.</p>
+          <h1 className="text-3xl font-bold text-slate-900">{t('create_new_listing')}</h1>
+          <p className="text-slate-500 mt-1">{t('create_listing_desc')}</p>
         </div>
       </div>
 
@@ -56,7 +58,7 @@ export default function CreateListing() {
         {/* Left Column: Image Upload */}
         <div className="lg:col-span-1">
           <div className="sticky top-24">
-            <label className="block text-sm font-semibold text-slate-700 mb-4">Listing Image</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-4">{t('listing_image')}</label>
             <div 
               className={cn(
                 "relative aspect-square rounded-3xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden transition-all group",
@@ -72,7 +74,7 @@ export default function CreateListing() {
                       onClick={() => { setImagePreview(null); setFile(null); }}
                       className="bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-white/30 transition-all"
                     >
-                      Change Image
+                      {t('change_image')}
                     </button>
                   </div>
                 </>
@@ -81,8 +83,8 @@ export default function CreateListing() {
                   <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 text-emerald-500 group-hover:scale-110 transition-transform">
                     <Camera className="w-8 h-8" />
                   </div>
-                  <p className="text-sm font-medium text-slate-600">Click to upload or drag & drop</p>
-                  <p className="text-xs text-slate-400 mt-1">JPG, PNG up to 5MB</p>
+                  <p className="text-sm font-medium text-slate-600">{t('click_to_upload')}</p>
+                  <p className="text-xs text-slate-400 mt-1">{t('image_specs')}</p>
                 </div>
               )}
               <input 
@@ -103,7 +105,7 @@ export default function CreateListing() {
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <Package className="w-4 h-4 text-emerald-500" />
-                Waste Category
+                {t('waste_category')}
               </label>
               <div className="grid grid-cols-2 gap-3">
                 {categories.map((cat: any) => (
@@ -112,7 +114,7 @@ export default function CreateListing() {
                     type="button"
                     onClick={() => setFormData({ ...formData, category_id: cat.category_id.toString() })}
                     className={cn(
-                      "px-4 py-3 rounded-xl border-2 text-left transition-all",
+                      "px-4 py-3 rounded-xl border-2 text-left transition-all relative",
                       formData.category_id === cat.category_id.toString()
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm"
                         : "border-slate-100 bg-slate-50 text-slate-600 hover:border-emerald-200"
@@ -127,7 +129,7 @@ export default function CreateListing() {
                 ))}
                 {categories.length === 0 && (
                   <div className="col-span-2 py-8 text-center text-slate-400 border-2 border-dashed border-slate-100 rounded-xl">
-                    No categories found. Please contact admin.
+                    {t('no_categories_found')}
                   </div>
                 )}
               </div>
@@ -136,7 +138,7 @@ export default function CreateListing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Quantity */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Quantity</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('quantity')}</label>
                 <div className="relative">
                   <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -152,7 +154,7 @@ export default function CreateListing() {
 
               {/* Price */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Asking Price</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('asking_price')}</label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -171,7 +173,7 @@ export default function CreateListing() {
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-emerald-500" />
-                Available From
+                {t('available_from')}
               </label>
               <input
                 type="date"
@@ -186,19 +188,19 @@ export default function CreateListing() {
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-500" />
-                Description
+                {t('description')}
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none min-h-[120px]"
-                placeholder="Details about quality, type, and collection instructions..."
+                placeholder={t('description_placeholder')}
               />
             </div>
 
             {createError && (
               <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm font-medium border border-red-100">
-                {(createError as any).response?.data?.message || 'Failed to create listing. Please try again.'}
+                {(createError as any).response?.data?.message || t('create_listing_error')}
               </div>
             )}
 
@@ -211,7 +213,7 @@ export default function CreateListing() {
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  Post Listing
+                  {t('post_listing')}
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}

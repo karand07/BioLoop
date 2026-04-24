@@ -1,19 +1,22 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, Tag, ShoppingCart, LogOut, ShieldCheck, Settings } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 import { cn } from '../../lib/utils';
 
-const navItems = [
-  { name: 'Overview', href: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'User Management', href: '/admin/users', icon: Users },
-  { name: 'Waste Categories', href: '/admin/categories', icon: Tag },
-  { name: 'Global Orders', href: '/admin/orders', icon: ShoppingCart },
-  { name: 'Platform Settings', href: '/admin/settings', icon: Settings },
-];
-
 export default function AdminLayout() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { logout } = useAuth();
+
+  const navItems = [
+    { name: t('overview'), href: '/admin/dashboard', icon: LayoutDashboard },
+    { name: t('user_management'), href: '/admin/users', icon: Users },
+    { name: t('waste_categories'), href: '/admin/categories', icon: Tag },
+    { name: t('global_orders'), href: '/admin/orders', icon: ShoppingCart },
+    { name: t('platform_settings'), href: '/admin/settings', icon: Settings },
+  ];
 
   return (
     <div className="min-h-screen flex bg-slate-50 font-sans">
@@ -31,7 +34,7 @@ export default function AdminLayout() {
             const isActive = location.pathname === item.href;
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group",
@@ -56,7 +59,7 @@ export default function AdminLayout() {
             className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl text-slate-500 hover:text-white hover:bg-red-500/10 transition-all group font-bold text-sm"
           >
             <LogOut className="w-5 h-5 group-hover:text-red-400 transition-colors" />
-            Logout Session
+            {t('logout_session')}
           </button>
         </div>
       </aside>
@@ -65,11 +68,12 @@ export default function AdminLayout() {
       <main className="ml-64 flex-1">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-10 sticky top-0 z-40">
           <h2 className="text-xl font-bold text-slate-800">
-            {navItems.find(item => item.href === location.pathname)?.name || 'Admin Panel'}
+            {navItems.find(item => item.href === location.pathname)?.name || t('admin_panel')}
           </h2>
-          <div className="flex items-center gap-4">
-             <div className="bg-slate-100 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500">
-                Mainnet Node
+          <div className="flex items-center gap-6">
+             <LanguageSwitcher />
+             <div className="bg-slate-100 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500 border border-slate-200">
+                {t('mainnet_node')}
              </div>
              <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-xs shadow-lg">
                 AD

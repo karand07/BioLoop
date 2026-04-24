@@ -1,21 +1,24 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, PlusCircle, List, MessageSquare, ShoppingBag, LogOut, Leaf, User, IndianRupee } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 import { cn } from '../../lib/utils';
 
-const navItems = [
-  { name: 'Dashboard', href: '/farmer/dashboard', icon: LayoutDashboard },
-  { name: 'Create Listing', href: '/farmer/create-listing', icon: PlusCircle },
-  { name: 'My Listings', href: '/farmer/listings', icon: List },
-  { name: 'Requests', href: '/farmer/requests', icon: MessageSquare },
-  { name: 'Orders', href: '/farmer/orders', icon: ShoppingBag },
-  { name: 'Earnings', href: '/farmer/earnings', icon: IndianRupee },
-  { name: 'Profile', href: '/farmer/profile', icon: User },
-];
-
 export default function FarmerLayout() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { user, logout } = useAuth();
+
+  const navItems = [
+    { name: t('dashboard'), href: '/farmer/dashboard', icon: LayoutDashboard },
+    { name: t('create_listing'), href: '/farmer/create-listing', icon: PlusCircle },
+    { name: t('my_listings'), href: '/farmer/listings', icon: List },
+    { name: t('my_requests'), href: '/farmer/requests', icon: MessageSquare },
+    { name: t('my_orders'), href: '/farmer/orders', icon: ShoppingBag },
+    { name: t('earnings'), href: '/farmer/earnings', icon: IndianRupee },
+    { name: t('profile'), href: '/farmer/profile', icon: User },
+  ];
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -33,7 +36,7 @@ export default function FarmerLayout() {
             const isActive = location.pathname === item.href;
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
@@ -58,7 +61,7 @@ export default function FarmerLayout() {
               {user?.farmer_profile?.farm_name?.charAt(0) || 'F'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.farmer_profile?.farm_name || 'Loading...'}</p>
+              <p className="text-sm font-medium truncate">{user?.farmer_profile?.farm_name || t('loading')}</p>
               <p className="text-xs text-emerald-100/50 truncate">{user?.email}</p>
             </div>
           </div>
@@ -67,7 +70,7 @@ export default function FarmerLayout() {
             className="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-emerald-100/50 hover:text-white hover:bg-red-500/10 transition-colors group"
           >
             <LogOut className="w-5 h-5 group-hover:text-red-400" />
-            <span className="font-medium">Logout</span>
+            <span className="font-medium">{t('logout')}</span>
           </button>
         </div>
       </aside>
@@ -76,11 +79,12 @@ export default function FarmerLayout() {
       <main className="ml-64 flex-1">
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
           <h2 className="text-lg font-semibold text-slate-700">
-            {navItems.find(item => item.href === location.pathname)?.name || 'Farmer Portal'}
+            {navItems.find(item => item.href === location.pathname)?.name || t('farmer_account')}
           </h2>
           <div className="flex items-center gap-4">
+            <LanguageSwitcher />
             <div className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-              Farmer Account
+              {t('farmer_account')}
             </div>
           </div>
         </header>
