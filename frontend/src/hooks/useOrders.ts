@@ -58,7 +58,7 @@ export const useOrders = () => {
 
   const proposeSlotsMutation = useMutation({
     mutationFn: async ({ orderId, slots }: { orderId: number; slots: string[] }) => {
-      const response = await api.post('/pickupschedule/propose', { order_id: orderId, proposed_slots: slots });
+      const response = await api.post('/pickup/propose', { order_id: orderId, proposed_slots: slots });
       return response.data;
     },
     onSuccess: () => {
@@ -68,7 +68,7 @@ export const useOrders = () => {
 
   const confirmSlotMutation = useMutation({
     mutationFn: async ({ orderId, slot }: { orderId: number; slot: string }) => {
-      const response = await api.patch(`/pickupschedule/${orderId}/confirm`, { confirmed_slot: slot });
+      const response = await api.patch(`/pickup/${orderId}/confirm`, { confirmed_slot: slot });
       return response.data;
     },
     onSuccess: () => {
@@ -78,7 +78,7 @@ export const useOrders = () => {
 
   const initiatePaymentMutation = useMutation({
     mutationFn: async (orderId: number) => {
-      const response = await api.post('/payment/create', { order_id: orderId });
+      const response = await api.post('/payment/create-order', { order_id: orderId });
       return response.data;
     },
   });

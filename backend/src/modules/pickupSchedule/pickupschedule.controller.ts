@@ -4,35 +4,48 @@ import { Request, Response } from "express";
 
 class pickupScheduleController {
 proposeSlots = async (req: Request, res: Response) => {
-  const userId = req.user?.id;
-  const result = proposeSlotsSchema.safeParse(req.body);
-  if (!result.success) {
-    return res.status(400).json({
-      message: "Invalid data",
-      error: result.error.issues,
+  try {
+    const userId = req.user?.id;
+    const result = proposeSlotsSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({
+        message: "Invalid data",
+        error: result.error.issues,
+      });
+    }
+    const schedule = await pickupScheduleServices.proposeSlots(result.data, userId!);
+    return res.status(201).json({
+      message: "Pickup slots proposed successfully",
+      data: schedule,
+    });
+  } catch (error: any) {
+    return res.status(error.message.includes("Unauthorized") ? 403 : 500).json({
+      message: error.message || "Something went wrong",
     });
   }
-  const schedule = await pickupScheduleServices.proposeSlots(result.data, userId!);
-  return res.status(201).json({
-    message: "Pickup slots proposed successfully",
-    data: schedule,
-  });
 };
 
 confirmSlot = async (req: Request, res: Response) => {
-  const userId = req.user?.id;
-  const result = confirmSlotSchema.safeParse(req.body);
-  if (!result.success) {
-    return res.status(400).json({
-      message: "Invalid data",
-      error: result.error.issues,
+  try {
+    const userId = req.user?.id;
+    const order_id = Number(req.params.order_id);
+    const result = confirmSlotSchema.safeParse({ ...req.body, order_id });
+    if (!result.success) {
+      return res.status(400).json({
+        message: "Invalid data",
+        error: result.error.issues,
+      });
+    }
+    const schedule = await pickupScheduleServices.confirmSlot(result.data, userId!);
+    return res.status(200).json({
+      message: "Pickup slot confirmed successfully",
+      data: schedule,
+    });
+  } catch (error: any) {
+    return res.status(error.message.includes("Unauthorized") ? 403 : 500).json({
+      message: error.message || "Something went wrong",
     });
   }
-  const schedule = await pickupScheduleServices.confirmSlot(result.data, userId!);
-  return res.status(200).json({
-    message: "Pickup slot confirmed successfully",
-    data: schedule,
-  });
 };
 
 markPickedUp = async (req: Request, res: Response) => {

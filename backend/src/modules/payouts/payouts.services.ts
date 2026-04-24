@@ -30,9 +30,13 @@ async releasePayout(order_id: number) {
     where: { farmer_id: order.farmer_id },
   });
 
+  if (!order.pickup_schedule?.logistics_id) {
+    throw new Error("Logistics partner not assigned to this order");
+  }
+
   // get logistics bank details
   const logistics = await prisma.logisticsProfile.findUnique({
-    where: { logistics_id: order.pickup_schedule!.logistics_id },
+    where: { logistics_id: order.pickup_schedule.logistics_id },
   });
 
   // release farmer payout via razorpay route

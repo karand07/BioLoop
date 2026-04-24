@@ -233,7 +233,7 @@ model Order {
 model Pickup_Schedule {
   schedule_id      Int            @id @default(autoincrement())
   order_id         Int            @unique
-  logistics_id     Int
+  logistics_id     Int?
   proposed_slots   Json
   confirmed_slot   DateTime?
   status           ScheduleStatus @default(pending)
@@ -241,8 +241,8 @@ model Pickup_Schedule {
   delivery_address String
   distance_km      Decimal        @db.Decimal(10, 2)
 
-  order     Order            @relation(fields: [order_id], references: [order_id])
-  logistics LogisticsProfile @relation(fields: [logistics_id], references: [logistics_id])
+  order     Order             @relation(fields: [order_id], references: [order_id])
+  logistics LogisticsProfile? @relation(fields: [logistics_id], references: [logistics_id])
 }
 
 model Payment {

@@ -1,5 +1,5 @@
 import  { useState } from 'react';
-import { ShoppingBag, IndianRupee, Truck, Loader2, Building2, MapPin, Clock, CheckCircle2, Calendar, X } from 'lucide-react';
+import { ShoppingBag, IndianRupee, Truck, Loader2, Building2, MapPin, Clock, CheckCircle2, Calendar, X, Package } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
@@ -15,6 +15,7 @@ export default function CompanyOrders() {
   const { orders, isOrdersLoading, confirmSlot, isConfirming, initiatePayment, isInitiatingPayment, verifyPayment, confirmDelivery, isConfirmingDelivery } = useOrders();
   const { user } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [viewingSummary, setViewingSummary] = useState<any>(null);
 
   const handleConfirm = (slot: string) => {
     confirmSlot({ orderId: selectedOrder.order_id, slot });
@@ -39,6 +40,7 @@ export default function CompanyOrders() {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
           });
+          setViewingSummary(null);
         },
         prefill: {
           name: user?.name,
@@ -175,12 +177,11 @@ export default function CompanyOrders() {
 
                   {order.status === 'confirmed' && (
                     <button 
-                      onClick={() => handlePayment(order)}
-                      disabled={isInitiatingPayment}
+                      onClick={() => setViewingSummary(order)}
                       className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 flex items-center justify-center gap-2"
                     >
-                      {isInitiatingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : <IndianRupee className="w-4 h-4" />}
-                      Pay Now
+                      <IndianRupee className="w-4 h-4" />
+                      View Summary & Pay
                     </button>
                   )}
 
@@ -211,6 +212,101 @@ export default function CompanyOrders() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Payment Summary Modal */}
+      {viewingSummary && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+            <button 
+              onClick={() => setViewingSummary(null)}
+              className="absolute top-8 right-8 p-2 hover:bg-slate-100 rounded-2xl transition-colors z-10"
+            >
+              <X className="w-6 h-6 text-slate-400" />
+            </button>
+
+            <div className="p-10">
+              <div className="text-center mb-10">
+                <div className="w-20 h-20 bg-emerald-100 rounded-[2rem] flex items-center justify-center text-emerald-600 mx-auto mb-4">
+                  <ShoppingBag className="w-10 h-10" />
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Order Summary</h2>
+                <p className="text-slate-500 font-bold text-sm">Review details before payment</p>
+              </div>
+
+              <div className="space-y-4 mb-10">
+                <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
+                         <Package className="w-5 h-5" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-600">Waste Cost ({viewingSummary.quantity} {viewingSummary.request?.listing?.category?.unit})</span>
+                   </div>
+                   <span className="font-black text-slate-900 flex items-center gap-1">
+                      <IndianRupee className="w-3.5 h-3.5" />
+                      {(Number(viewingSummary.final_price) * Number(viewingSummary.quantity)).toFixed(2)}
+                   </span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
+                         <Truck className="w-5 h-5" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-600">Logistics & Delivery</span>
+                   </div>
+                   <span className="font-black text-slate-900 flex items-center gap-1">
+                      <IndianRupee className="w-3.5 h-3.5" />
+                      {Number(viewingSummary.delivery_cost).toFixed(2)}
+                   </span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400">
+                         <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-600">Platform Commission (3%)</span>
+                   </div>
+                   <span className="font-black text-slate-900 flex items-center gap-1">
+                      <IndianRupee className="w-3.5 h-3.5" />
+                      {Number(viewingSummary.platform_commission).toFixed(2)}
+                   </span>
+                </div>
+
+                <div className="h-px bg-slate-100 my-4" />
+
+                <div className="flex justify-between items-center px-4">
+                   <span className="text-lg font-black text-slate-900">Total Payable</span>
+                   <span className="text-3xl font-black text-emerald-600 flex items-center gap-1">
+                      <IndianRupee className="w-6 h-6" />
+                      {Number(viewingSummary.total_amount).toFixed(2)}
+                   </span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => handlePayment(viewingSummary)}
+                disabled={isInitiatingPayment}
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-5 rounded-[2rem] shadow-xl shadow-slate-200 transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+              >
+                {isInitiatingPayment ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  <>
+                    <IndianRupee className="w-5 h-5" />
+                    Complete Secure Payment
+                  </>
+                )}
+              </button>
+              
+              <p className="text-center text-[10px] text-slate-400 font-bold mt-6 flex items-center justify-center gap-2">
+                 <Truck className="w-3 h-3" />
+                 Secured Escrow Payment via Razorpay
+              </p>
+            </div>
+          </div>
         </div>
       )}
 

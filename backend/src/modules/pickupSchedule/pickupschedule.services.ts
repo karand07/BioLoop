@@ -45,7 +45,7 @@ async proposeSlots(
   const schedule = await prisma.pickup_Schedule.create({
     data: {
       order_id,
-      logistics_id: 0, // will be assigned by admin
+      logistics_id: null, // will be assigned by admin
       proposed_slots,
       pickup_address: farmer!.farm_address,
       delivery_address: company!.address,
@@ -170,7 +170,7 @@ async getPickupDetails(order_id: number, userId: number) {
 async getAvailablePickups() {
   return await prisma.pickup_Schedule.findMany({
     where: {
-      logistics_id: 0,
+      logistics_id: null,
       status: "confirmed" // only show if company confirmed the slot
     },
     include: {
@@ -195,7 +195,7 @@ async claimPickup(order_id: number, userId: number) {
   const existing = await prisma.pickup_Schedule.findUnique({
     where: { order_id }
   });
-  if (!existing || existing.logistics_id !== 0) {
+  if (!existing || existing.logistics_id !== null) {
     throw new Error("Shipment not available or already claimed");
   }
   return await prisma.pickup_Schedule.update({
