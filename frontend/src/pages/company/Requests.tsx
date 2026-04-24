@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { MessageSquare, IndianRupee, Package,  Clock, CheckCircle2, XCircle, AlertCircle, Loader2, Building2 } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { cn } from '../../lib/utils';
@@ -13,6 +14,7 @@ const statusConfig: Record<string, { color: string, icon: any, label: string }> 
 
 export default function CompanyRequests() {
   const { myRequests, isMyRequestsLoading, refetchMyRequests } = useOrders();
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -109,7 +111,10 @@ export default function CompanyRequests() {
                             <CheckCircle2 className="w-5 h-5" />
                             <span className="font-bold text-sm">Farmer accepted! Order is being finalized.</span>
                          </div>
-                         <button className="text-xs font-black uppercase tracking-widest bg-white/20 px-4 py-2 rounded-xl hover:bg-white/30 transition-all">
+                         <button 
+                           onClick={() => navigate('/orders')}
+                           className="text-xs font-black uppercase tracking-widest bg-white/20 px-4 py-2 rounded-xl hover:bg-white/30 transition-all"
+                         >
                             View Order
                          </button>
                       </div>

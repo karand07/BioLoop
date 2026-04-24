@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { useMemo } from 'react';
@@ -83,9 +83,12 @@ export const useAuth = () => {
     enabled: !!localStorage.getItem('token'),
   });
 
+  const queryClient = useQueryClient();
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    queryClient.clear();
     navigate('/login');
   };
 

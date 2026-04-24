@@ -58,7 +58,7 @@ export const useOrders = () => {
 
   const proposeSlotsMutation = useMutation({
     mutationFn: async ({ orderId, slots }: { orderId: number; slots: string[] }) => {
-      const response = await api.post('/pickupschedule/propose', { order_id: orderId, proposed_slots: slots });
+      const response = await api.post('/pickup/propose', { order_id: orderId, proposed_slots: slots });
       return response.data;
     },
     onSuccess: () => {
@@ -68,7 +68,34 @@ export const useOrders = () => {
 
   const confirmSlotMutation = useMutation({
     mutationFn: async ({ orderId, slot }: { orderId: number; slot: string }) => {
-      const response = await api.patch(`/pickupschedule/${orderId}/confirm`, { confirmed_slot: slot });
+      const response = await api.patch(`/pickup/${orderId}/confirm`, { confirmed_slot: slot });
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
+  const initiatePaymentMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      const response = await api.post('/payment/create-order', { order_id: orderId });
+      return response.data;
+    },
+  });
+
+  const verifyPaymentMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await api.post('/payment/verify', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      myOrdersQuery.refetch();
+    },
+  });
+
+  const confirmDeliveryMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      const response = await api.patch(`/order/${orderId}/confirm-delivery`);
       return response.data;
     },
     onSuccess: () => {
@@ -91,6 +118,12 @@ export const useOrders = () => {
     isProposing: proposeSlotsMutation.isPending,
     confirmSlot: confirmSlotMutation.mutate,
     isConfirming: confirmSlotMutation.isPending,
+    initiatePayment: initiatePaymentMutation.mutateAsync,
+    isInitiatingPayment: initiatePaymentMutation.isPending,
+    verifyPayment: verifyPaymentMutation.mutate,
+    isVerifyingPayment: verifyPaymentMutation.isPending,
+    confirmDelivery: confirmDeliveryMutation.mutate,
+    isConfirmingDelivery: confirmDeliveryMutation.isPending,
     refetchOrders: myOrdersQuery.refetch,
     refetchRequests: getIncomingRequestsQuery.refetch,
     refetchMyRequests: getMyRequestsQuery.refetch,

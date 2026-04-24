@@ -23,8 +23,16 @@ class PaymetServices {
     const existingPayment = await prisma.payment.findUnique({
       where: { order_id },
     });
+    
     if (existingPayment) {
-      throw new Error("Payment already initiated for this order");
+      // Fetch existing order from Razorpay to ensure it's still valid
+      try {
+        const razorpayOrder = await razorpay.orders.fetch(existingPayment.razorpay_order_id);
+        return { payment: existingPayment, razorpayOrder };
+      } catch (err) {
+        // If fetching fails, we might want to create a new one, but for now let's just log and throw
+        throw new Error("Payment already exists but could not be retrieved from Razorpay");
+      }
     }
 
     // create razorpay order

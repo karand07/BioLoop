@@ -7,7 +7,7 @@ export const useLogistics = () => {
   const availablePickupsQuery = useQuery({
     queryKey: ['available-pickups'],
     queryFn: async () => {
-      const response = await api.get('/pickupschedule/available');
+      const response = await api.get('/pickup/available');
       return response.data.data;
     },
   });
@@ -15,14 +15,14 @@ export const useLogistics = () => {
   const myPickupsQuery = useQuery({
     queryKey: ['my-pickups'],
     queryFn: async () => {
-      const response = await api.get('/pickupschedule/my');
+      const response = await api.get('/pickup/my');
       return response.data.data;
     },
   });
 
   const claimPickupMutation = useMutation({
     mutationFn: async (orderId: number) => {
-      const response = await api.post(`/pickupschedule/${orderId}/claim`);
+      const response = await api.post(`/pickup/${orderId}/claim`);
       return response.data;
     },
     onSuccess: () => {
@@ -33,7 +33,7 @@ export const useLogistics = () => {
 
   const markPickedUpMutation = useMutation({
     mutationFn: async (orderId: number) => {
-      const response = await api.patch(`/pickupschedule/${orderId}/picked-up`);
+      const response = await api.patch(`/pickup/${orderId}/picked-up`);
       return response.data;
     },
     onSuccess: () => {
@@ -43,7 +43,7 @@ export const useLogistics = () => {
 
   const markDeliveredMutation = useMutation({
     mutationFn: async (orderId: number) => {
-      const response = await api.patch(`/pickupschedule/${orderId}/delivered`);
+      const response = await api.patch(`/pickup/${orderId}/delivered`);
       return response.data;
     },
     onSuccess: () => {

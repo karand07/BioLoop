@@ -194,7 +194,7 @@ class RequestServices {
       const ratePerKm = 15;
       const baseCharge = 200;
       const deliveryCost = baseCharge + distanceKm * ratePerKm;
-      const finalPrice = negotiated_price || request.offered_price;
+      const finalPrice = request.offered_price;
       const platformCommission = Number(finalPrice) * 0.03;
       const totalAmount = Number(finalPrice) * Number(request.requested_quantity) + deliveryCost + platformCommission;
 
@@ -233,6 +233,40 @@ class RequestServices {
         });
 
         return order;
+      });
+    }
+
+    if (status === 'negotiated') {
+      return await prisma.$transaction(async (tx) => {
+        // 1. Update Request to negotiating
+        const updatedRequest = await tx.order_Request.update({
+          where: { request_id },
+          data: { status: 'negotiating' }
+        });
+
+        // 2. Mark Listing as Sold
+        await tx.waste_Listings.update({
+          where: { listing_id: request.listing_id },
+          data: { status: 'sold' }
+        });
+
+        // 3. Auto-reject other requests
+        await tx.order_Request.updateMany({
+          where: { listing_id: request.listing_id, request_id: { not: request_id } },
+          data: { status: 'auto_rejected', is_active: false }
+        });
+
+        // 4. Create initial negotiation record
+        await tx.negotiation.create({
+          data: {
+            request_id,
+            proposed_price: request.offered_price,
+            proposed_by: 'company',
+            message: 'Negotiation started'
+          }
+        });
+
+        return updatedRequest;
       });
     }
   }
