@@ -100,6 +100,15 @@ const resources = {
         signup_failed: "Failed to create account. Please try again.",
         create_account: "Create Account"
       },
+      map: {
+        select_location_map: "Select Location on Map",
+        locate_me: "Locate Me",
+        click_map_to_set: "Click on map to set location",
+        location_access_denied: "Location access denied. Please enable GPS.",
+        geolocation_not_supported: "Geolocation is not supported by your browser.",
+        lat: "Latitude",
+        lng: "Longitude"
+      },
       save: "Save Changes",
       cancel: "Cancel",
       loading: "Loading...",
@@ -501,6 +510,15 @@ const resources = {
         signup_failed: "खाता बनाने में विफल। कृपया पुन: प्रयास करें।",
         create_account: "खाता बनाएं"
       },
+      map: {
+        select_location_map: "मानचित्र पर स्थान चुनें",
+        locate_me: "मेरी स्थिति जानें",
+        click_map_to_set: "स्थान सेट करने के लिए मानचित्र पर क्लिक करें",
+        location_access_denied: "स्थान पहुंच अस्वीकार कर दी गई। कृपया GPS सक्षम करें।",
+        geolocation_not_supported: "आपका ब्राउज़र जियोलोकेशन का समर्थन नहीं करता है।",
+        lat: "अक्षांश",
+        lng: "देशांतर"
+      },
       save: "बदलाव सहेजें",
       cancel: "रद्द करें",
       loading: "लोड हो रहा है...",
@@ -901,6 +919,15 @@ const resources = {
         already_have_account: "आधीच खाते आहे का?",
         signup_failed: "खाते तयार करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
         create_account: "खाते तयार करा"
+      },
+      map: {
+        select_location_map: "नकाशावर स्थान निवडा",
+        locate_me: "माझे स्थान शोधा",
+        click_map_to_set: "स्थान सेट करण्यासाठी नकाशावर क्लिक करा",
+        location_access_denied: "स्थान प्रवेश नाकारला. कृपया GPS सक्षम करा.",
+        geolocation_not_supported: "तुमचा ब्राउझर जिओलोकेशनला समर्थन देत नाही.",
+        lat: "अक्षांश",
+        lng: "रेखांश"
       },
       save: "बदल जतन करा",
       cancel: "रद्द करा",
