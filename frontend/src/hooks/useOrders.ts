@@ -1,9 +1,10 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { useAuth } from './useAuth';
 
 export const useOrders = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const userRole = user?.role;
 
   const myOrdersQuery = useQuery({
@@ -53,6 +54,7 @@ export const useOrders = () => {
     },
     onSuccess: () => {
       getMyRequestsQuery.refetch();
+      queryClient.invalidateQueries({ queryKey: ['all-listings'] });
     },
   });
 
@@ -127,5 +129,6 @@ export const useOrders = () => {
     refetchOrders: myOrdersQuery.refetch,
     refetchRequests: getIncomingRequestsQuery.refetch,
     refetchMyRequests: getMyRequestsQuery.refetch,
+    requestsError: getMyRequestsQuery.error,
   };
 };

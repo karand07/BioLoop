@@ -1,9 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { useAuth } from './useAuth';
 
 export const useWaste = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userRole = user?.role;
 
   // Fetch categories (Assuming we might need to add this route or it exists)
   const categoriesQuery = useQuery({
@@ -55,14 +58,18 @@ export const useWaste = () => {
       const response = await api.get('/wastelistings');
       return response.data.data;
     },
+    // Only fetch for roles that need the marketplace
+    enabled: !!user && (userRole === 'company' || userRole === 'admin' || userRole === 'farmer'),
   });
  
   const getMyListingsQuery = useQuery({
     queryKey: ['my-listings'],
     queryFn: async () => {
-      const response = await api.get('/wastelistings/my'); // I'll assume this exists or will be added
+      const response = await api.get('/wastelistings/my');
       return response.data.data;
     },
+    // Only fetch for farmers
+    enabled: userRole === 'farmer',
   });
  
   const getListingByIdQuery = (id: number) => useQuery({
@@ -84,9 +91,13 @@ export const useWaste = () => {
     isUpdating: updateListingMutation.isPending,
     deleteListing: deleteListingMutation.mutate,
     isDeleting: deleteListingMutation.isPending,
+    deleteError: deleteListingMutation.error,
     myListings: getMyListingsQuery.data || [],
     listings: getAllListingsQuery.data || [],
-    isListingsLoading: getMyListingsQuery.isLoading || getAllListingsQuery.isLoading,
+    isMyListingsLoading: getMyListingsQuery.isLoading,
+    isAllListingsLoading: getAllListingsQuery.isLoading,
+    isListingsLoading: getAllListingsQuery.isLoading || categoriesQuery.isLoading,
+    listingsError: getAllListingsQuery.error,
     refetchListings: getMyListingsQuery.refetch,
     refetchAllListings: getAllListingsQuery.refetch,
     getListingById: getListingByIdQuery,

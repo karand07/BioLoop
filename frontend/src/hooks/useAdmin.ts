@@ -50,21 +50,41 @@ export const useAdmin = () => {
 
   const createCategoryMutation = useMutation({
     mutationFn: async (formData: any) => {
-      const response = await api.post('/waste-category/create', formData);
+      const response = await api.post('/wastecategory/create', formData);
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['waste-categories'] });
+    },
+  });
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: async ({ id, formData }: { id: number; formData: any }) => {
+      const response = await api.put(`/wastecategory/update/${id}`, formData);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['waste-categories'] });
     },
   });
 
   const deleteCategoryMutation = useMutation({
     mutationFn: async (categoryId: number) => {
-      const response = await api.delete(`/waste-category/delete/${categoryId}`);
+      const response = await api.delete(`/wastecategory/delete/${categoryId}`);
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['waste-categories'] });
+    },
+  });
+
+  const assignLogisticsMutation = useMutation({
+    mutationFn: async ({ orderId, logisticsId }: { orderId: number; logisticsId: number }) => {
+      const response = await api.patch(`/admin/orders/${orderId}/assign-logistics`, { logistics_id: logisticsId });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
     },
   });
 
@@ -98,8 +118,11 @@ export const useAdmin = () => {
     verifyUser: verifyUserMutation.mutate,
     blockUser: blockUserMutation.mutate,
     createCategory: createCategoryMutation.mutate,
+    updateCategory: updateCategoryMutation.mutate,
     deleteCategory: deleteCategoryMutation.mutate,
+    assignLogistics: assignLogisticsMutation.mutate,
     updateSettings: updateSettingsMutation.mutate,
-    isMutating: verifyUserMutation.isPending || blockUserMutation.isPending || createCategoryMutation.isPending || deleteCategoryMutation.isPending || updateSettingsMutation.isPending,
+    logistics: allUsersQuery.data?.filter((u: any) => u.role === 'logistics') || [],
+    isMutating: verifyUserMutation.isPending || blockUserMutation.isPending || createCategoryMutation.isPending || updateCategoryMutation.isPending || deleteCategoryMutation.isPending || assignLogisticsMutation.isPending || updateSettingsMutation.isPending,
   };
 };

@@ -58,7 +58,7 @@ export default function AdminSettings() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 gap-8">
         <div className="space-y-8">
            {/* Financials Section */}
            <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
@@ -115,6 +115,36 @@ export default function AdminSettings() {
                           />
                        </div>
                     </div>
+                 </div>
+              </div>
+           </div>
+
+           {/* System Status Section */}
+           <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+              <div className="p-8 border-b border-slate-50 flex items-center gap-4">
+                 <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600 shadow-sm border border-rose-100">
+                    <Zap className="w-6 h-6" />
+                 </div>
+                 <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">System Status</h3>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Global Platform Availability</p>
+                 </div>
+              </div>
+              <div className="p-10">
+                 <div className="flex items-center justify-between p-8 bg-slate-50 rounded-3xl border border-slate-100">
+                    <div className="space-y-1">
+                       <p className="text-sm font-black text-slate-900 uppercase tracking-widest">Maintenance Mode</p>
+                       <p className="text-xs text-slate-500 font-medium leading-relaxed">When active, only administrators can access the platform dashboard. All other portals will show a maintenance notice.</p>
+                    </div>
+                    <button
+                       type="button"
+                       onClick={() => setFormData({ ...formData, is_maintenance_mode: !formData.is_maintenance_mode })}
+                       className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${formData.is_maintenance_mode ? 'bg-rose-500' : 'bg-slate-200'}`}
+                    >
+                       <span
+                          className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${formData.is_maintenance_mode ? 'translate-x-7' : 'translate-x-1.5'}`}
+                       />
+                    </button>
                  </div>
               </div>
            </div>

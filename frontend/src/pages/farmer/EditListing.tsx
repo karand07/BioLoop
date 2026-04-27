@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check, ArrowLeft } from 'lucide-react';
+import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check, ArrowLeft, AlertCircle, Info } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
 import { cn } from '../../lib/utils';
+import { t } from 'i18next';
 
 export default function EditListing() {
   const { id } = useParams();
@@ -176,7 +177,7 @@ export default function EditListing() {
 
               {/* Price */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Asking Price</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">{t('asking_price')}</label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
@@ -187,6 +188,41 @@ export default function EditListing() {
                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                 </div>
+                {formData.category_id && formData.asking_price && (() => {
+                  const category = categories.find((c: any) => c.category_id.toString() === formData.category_id);
+                  if (category) {
+                    const price = parseFloat(formData.asking_price);
+                    const min = parseFloat(category.min_ref_price);
+                    const max = parseFloat(category.max_ref_price);
+                    
+                    if (price > max) {
+                      return (
+                        <div className="mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-2 animate-in slide-in-from-top-1 duration-300">
+                          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                            {t('price_too_high_warning', { max })}
+                          </p>
+                        </div>
+                      );
+                    }
+                    if (price < min) {
+                      return (
+                        <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2 animate-in slide-in-from-top-1 duration-300">
+                          <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+                            {t('price_too_low_warning', { min })}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <p className="mt-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest pl-1">
+                        {t('price_market_range', { min, max, unit: category.unit })}
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             </div>
 

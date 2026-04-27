@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check } from 'lucide-react';
+import { Camera, Package, IndianRupee, FileText, Calendar, Loader2, ArrowRight, Check,  AlertCircle, Info } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
@@ -166,6 +166,41 @@ export default function CreateListing() {
                     placeholder="0.00"
                   />
                 </div>
+                {formData.category_id && formData.asking_price && (() => {
+                  const category = categories.find((c: any) => c.category_id.toString() === formData.category_id);
+                  if (category) {
+                    const price = parseFloat(formData.asking_price);
+                    const min = parseFloat(category.min_ref_price);
+                    const max = parseFloat(category.max_ref_price);
+                    
+                    if (price > max) {
+                      return (
+                        <div className="mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-2 animate-in slide-in-from-top-1 duration-300">
+                          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-amber-700 font-medium leading-relaxed">
+                            {t('price_too_high_warning', { max })}
+                          </p>
+                        </div>
+                      );
+                    }
+                    if (price < min) {
+                      return (
+                        <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2 animate-in slide-in-from-top-1 duration-300">
+                          <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+                            {t('price_too_low_warning', { min })}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <p className="mt-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest pl-1">
+                        {t('price_market_range', { min, max, unit: category.unit })}
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
             </div>
 
