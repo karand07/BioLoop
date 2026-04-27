@@ -50,20 +50,28 @@ export async function createRazorpayPayout(
       },
     );
     return response.data;
-  } catch (error: any) {
-    const isUrlNotFound = error.response?.data?.error?.description?.includes("not found") || error.response?.status === 404;
-    
-    if (isUrlNotFound) {
-      console.warn("⚠️ RazorpayX (Payouts) is not enabled on this account. Falling back to MOCK PAYOUT for demo purposes.");
-      return {
-        id: `mock_pout_${Math.random().toString(36).substr(2, 9)}`,
-        status: "processed",
-        amount: Math.round(amount * 100),
-        currency: "INR",
-      };
-    }
+  } catch (error: unknown) {
+  const err = error as any;
 
-    console.error("Razorpay Payout Error:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.error?.description || "Razorpay Payout failed");
+  const isUrlNotFound =
+    err.response?.data?.error?.description?.includes("not found") ||
+    err.response?.status === 404;
+
+  if (isUrlNotFound) {
+    console.warn("⚠️ RazorpayX not enabled → using mock payout");
+    return {
+      id: `mock_pout_${Math.random().toString(36).slice(2, 11)}`,
+      status: "processed",
+      amount: Math.round(amount * 100),
+      currency: "INR",
+    };
   }
+
+  throw new Error(
+    err.response?.data?.error?.description || "Razorpay Payout failed",
+    {
+      cause: err instanceof Error ? err : new Error(String(err)),
+    }
+  );
+}
 }
