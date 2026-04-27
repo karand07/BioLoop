@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate, isAdmin, isFarmer } from "../../middleware/auth.middleware.js";
+import { authenticate, isAdmin} from "../../middleware/auth.middleware.js";
 import { payoutController } from "./payout.controller.js";
 const payoutRouter = Router();
 
