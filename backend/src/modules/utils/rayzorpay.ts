@@ -67,11 +67,9 @@ export async function createRazorpayPayout(
     };
   }
 
-  throw new Error(
-    err.response?.data?.error?.description || "Razorpay Payout failed",
-    {
-      cause: err instanceof Error ? err : new Error(String(err)),
-    }
-  );
+    throw new Error(
+      err.response?.data?.error?.description || "Razorpay Payout failed",
+      { cause: error }
+    );
 }
 }

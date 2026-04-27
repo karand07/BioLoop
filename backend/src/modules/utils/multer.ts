@@ -4,7 +4,7 @@ import cloudinary from "../../envConfig.js";
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: async (req, file) => {
+  params: async () => {
     return {
       folder: "waste-listings",
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
