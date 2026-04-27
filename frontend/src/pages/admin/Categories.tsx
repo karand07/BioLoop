@@ -6,8 +6,9 @@ import { Tag, Plus, Trash2, Edit3, Loader2, IndianRupee, Package, X } from 'luci
 
 export default function AdminCategories() {
   const { categories, isCategoriesLoading } = useWaste();
-  const { createCategory, deleteCategory, isMutating } = useAdmin();
+  const { createCategory, updateCategory, deleteCategory, isMutating } = useAdmin();
   const [isAdding, setIsAdding] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -17,11 +18,35 @@ export default function AdminCategories() {
     unit: 'kg',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createCategory(formData);
     setIsAdding(false);
+    resetForm();
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingCategory) {
+      updateCategory({ id: editingCategory.category_id, formData });
+      setEditingCategory(null);
+      resetForm();
+    }
+  };
+
+  const resetForm = () => {
     setFormData({ name: '', description: '', min_ref_price: 0, max_ref_price: 0, unit: 'kg' });
+  };
+
+  const openEdit = (cat: any) => {
+    setEditingCategory(cat);
+    setFormData({
+      name: cat.name,
+      description: cat.description,
+      min_ref_price: Number(cat.min_ref_price),
+      max_ref_price: Number(cat.max_ref_price),
+      unit: cat.unit,
+    });
   };
 
   if (isCategoriesLoading) {
@@ -40,7 +65,7 @@ export default function AdminCategories() {
           <p className="text-slate-500 mt-1">Manage standard types of bio-waste supported on the platform.</p>
         </div>
         <button 
-          onClick={() => setIsAdding(true)}
+          onClick={() => { setIsAdding(true); resetForm(); }}
           className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-emerald-200"
         >
           <Plus className="w-5 h-5" />
@@ -56,11 +81,18 @@ export default function AdminCategories() {
                 <Tag className="w-7 h-7" />
               </div>
               <div className="flex gap-2">
-                 <button className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all">
+                 <button 
+                  onClick={() => openEdit(cat)}
+                  className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
+                 >
                     <Edit3 className="w-5 h-5" />
                  </button>
                  <button 
-                  onClick={() => deleteCategory(cat.category_id)}
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to delete this category?')) {
+                      deleteCategory(cat.category_id);
+                    }
+                  }}
                   className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
                  >
                     <Trash2 className="w-5 h-5" />
@@ -89,21 +121,23 @@ export default function AdminCategories() {
         ))}
       </div>
 
-      {/* Add Category Modal */}
-      {isAdding && (
+      {/* Add/Edit Category Modal */}
+      {(isAdding || editingCategory) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
             <button 
-              onClick={() => setIsAdding(false)}
+              onClick={() => { setIsAdding(false); setEditingCategory(null); }}
               className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-xl transition-colors z-10"
             >
               <X className="w-6 h-6 text-slate-400" />
             </button>
 
             <div className="p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">New Category</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                {isAdding ? 'New Category' : 'Edit Category'}
+              </h2>
               
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={isAdding ? handleAddSubmit : handleEditSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Category Name</label>
                   <input
@@ -168,7 +202,7 @@ export default function AdminCategories() {
                   disabled={isMutating}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2"
                 >
-                  {isMutating ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Category'}
+                  {isMutating ? <Loader2 className="w-5 h-5 animate-spin" /> : (isAdding ? 'Create Category' : 'Save Changes')}
                 </button>
               </form>
             </div>

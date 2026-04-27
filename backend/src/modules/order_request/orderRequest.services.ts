@@ -103,7 +103,7 @@ class RequestServices {
       // 1. Accept this request
       prisma.order_Request.update({
         where: { request_id },
-        data: { status: "negotiating" },
+        data: { status: "accepted" },
       }),
       // 2. Auto-reject all other requests on same listing
       prisma.order_Request.updateMany({
@@ -162,11 +162,13 @@ class RequestServices {
 
     if (status === 'negotiated') {
       return await prisma.$transaction(async (tx) => {
+        // 1. Update Request to negotiating
         const updatedRequest = await tx.order_Request.update({
           where: { request_id },
           data: { status: 'negotiating', offered_price: negotiated_price || request.offered_price }
         });
 
+        // 2. Create negotiation record
         await tx.negotiation.create({
           data: {
             request_id,
@@ -185,10 +187,12 @@ class RequestServices {
       const farmer = await prisma.farmerProfile.findUnique({ where: { farmer_id: request.farmer_id } });
       const company = await prisma.companyProfile.findUnique({ where: { company_id: request.company_id } });
 
+      if (!farmer || !company) throw new Error("Profile not found");
+
       const { calculateDistance } = await import("../utils/calculateDistance.js");
       const distanceKm = await calculateDistance(
-        { lat: Number(farmer!.latitude), lng: Number(farmer!.longitude) },
-        { lat: Number(company!.latitude), lng: Number(company!.longitude) }
+        { lat: Number(farmer.latitude), lng: Number(farmer.longitude) },
+        { lat: Number(company.latitude), lng: Number(company.longitude) }
       );
 
       const ratePerKm = 15;
@@ -233,40 +237,6 @@ class RequestServices {
         });
 
         return order;
-      });
-    }
-
-    if (status === 'negotiated') {
-      return await prisma.$transaction(async (tx) => {
-        // 1. Update Request to negotiating
-        const updatedRequest = await tx.order_Request.update({
-          where: { request_id },
-          data: { status: 'negotiating' }
-        });
-
-        // 2. Mark Listing as Sold
-        await tx.waste_Listings.update({
-          where: { listing_id: request.listing_id },
-          data: { status: 'sold' }
-        });
-
-        // 3. Auto-reject other requests
-        await tx.order_Request.updateMany({
-          where: { listing_id: request.listing_id, request_id: { not: request_id } },
-          data: { status: 'auto_rejected', is_active: false }
-        });
-
-        // 4. Create initial negotiation record
-        await tx.negotiation.create({
-          data: {
-            request_id,
-            proposed_price: request.offered_price,
-            proposed_by: 'company',
-            message: 'Negotiation started'
-          }
-        });
-
-        return updatedRequest;
       });
     }
   }

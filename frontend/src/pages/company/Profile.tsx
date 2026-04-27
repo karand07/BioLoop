@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, Building, Loader2, Edit3, Save, X, Navigation } from 'lucide-react';
+import { Mail, Phone, Building, Loader2, Edit3, Save, X } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
+import LocationPicker from '../../components/shared/LocationPicker';
 import { cn } from '../../lib/utils';
 
 export default function CompanyProfile() {
@@ -172,37 +173,16 @@ export default function CompanyProfile() {
                       className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60 min-h-[100px]"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                      <Navigation className="w-4 h-4 text-emerald-500" />
-                      {t('latitude')}
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      disabled={!isEditing}
-                      value={formData.latitude}
-                      onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) })}
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                      <Navigation className="w-4 h-4 text-emerald-500" />
-                      {t('longitude')}
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      disabled={!isEditing}
-                      value={formData.longitude}
-                      onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) })}
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                    />
-                  </div>
                 </div>
+              </section>
+
+              <section className="space-y-6 pt-8 border-t border-slate-50">
+                <LocationPicker 
+                  lat={formData.latitude} 
+                  lng={formData.longitude} 
+                  onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })} 
+                  readOnly={!isEditing}
+                />
               </section>
 
               {isEditing && (

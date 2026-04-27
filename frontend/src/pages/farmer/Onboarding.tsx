@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Leaf, Building, Ruler, ArrowRight, Loader2, Navigation } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import LocationPicker from '../../components/shared/LocationPicker';
 import { cn } from '../../lib/utils';
 
 export default function FarmerOnboarding() {
@@ -28,6 +29,10 @@ export default function FarmerOnboarding() {
 
   const updateFormData = (key: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleLocationChange = (lat: number, lng: number) => {
+    setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
   };
 
   return (
@@ -122,32 +127,13 @@ export default function FarmerOnboarding() {
                   Location & Size
                 </h2>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Latitude</label>
-                    <input
-                      type="number"
-                      step="any"
-                      required
-                      value={formData.latitude}
-                      onChange={(e) => updateFormData('latitude', parseFloat(e.target.value))}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Longitude</label>
-                    <input
-                      type="number"
-                      step="any"
-                      required
-                      value={formData.longitude}
-                      onChange={(e) => updateFormData('longitude', parseFloat(e.target.value))}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    />
-                  </div>
-                </div>
+                <LocationPicker 
+                  lat={formData.latitude} 
+                  lng={formData.longitude} 
+                  onChange={handleLocationChange} 
+                />
 
-                <div>
+                <div className="pt-4">
                   <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                     <Ruler className="w-4 h-4" />
                     Land Size (Acres)

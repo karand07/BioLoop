@@ -1,25 +1,42 @@
-import React, { useState } from 'react';
-import { Search, Filter, MapPin, IndianRupee, Package, Calendar, ArrowRight, Loader2, ShoppingCart,  X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, Filter, MapPin, IndianRupee, Package, Calendar, ArrowRight, Loader2, ShoppingCart,  X, RefreshCw, AlertCircle } from 'lucide-react';
 import { useWaste } from '../../hooks/useWaste';
 import { useOrders } from '../../hooks/useOrders';
 import { useTranslation } from 'react-i18next';
+import { cn } from '../../lib/utils';
 
 export default function CompanyMarketplace() {
   const { t } = useTranslation();
-  const { listings, categories, isListingsLoading } = useWaste();
-  const { createRequest, isCreatingRequest } = useOrders();
+  const { listings, categories, isAllListingsLoading, refetchAllListings, listingsError } = useWaste();
+  const { createRequest, isCreatingRequest, myRequests, isMyRequestsLoading, requestsError } = useOrders();
+  
+  const isLoading = isAllListingsLoading || isMyRequestsLoading;
+  const isError = !!listingsError || !!requestsError;
   
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedListing, setSelectedListing] = useState<any>(null);
   const [orderData, setOrderData] = useState({ quantity: '', price: '' });
 
-  const filteredListings = listings.filter((listing: any) => {
-    const matchesCategory = selectedCategory === 'all' || listing.category_id.toString() === selectedCategory;
-    const matchesSearch = listing.category?.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         listing.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredListings = useMemo(() => {
+    // Safety check for data types
+    if (!Array.isArray(listings) || !Array.isArray(myRequests)) return [];
+
+    // Get IDs of listings already requested by this company (ensure numeric for comparison)
+    const requestedListingIds = new Set(myRequests.map((r: any) => Number(r.listing_id)));
+
+    return listings.filter((listing: any) => {
+      // Hide listings already requested or not active
+      if (requestedListingIds.has(Number(listing.listing_id))) return false;
+      if (listing.status !== 'active') return false;
+
+      const matchesCategory = selectedCategory === 'all' || listing.category_id.toString() === selectedCategory;
+      const matchesSearch = (listing.category?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           (listing.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           (listing.farmer?.farm_name || '').toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [listings, myRequests, selectedCategory, searchQuery]);
 
   const handleCreateRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,9 +97,38 @@ export default function CompanyMarketplace() {
       </div>
 
       {/* Listings Grid */}
-      {isListingsLoading ? (
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          {t('available_listings')}
+          <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-lg text-xs font-bold">
+            {filteredListings.length}
+          </span>
+        </h2>
+        <button 
+          onClick={() => refetchAllListings()}
+          disabled={isLoading}
+          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all disabled:opacity-50"
+          title={t('refresh_list')}
+        >
+          <RefreshCw className={cn("w-5 h-5", isLoading && "animate-spin")} />
+        </button>
+      </div>
+
+      {isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-10 h-10 animate-spin text-emerald-500" />
+        </div>
+      ) : isError ? (
+        <div className="bg-red-50 border border-red-100 rounded-[2.5rem] p-12 text-center my-10">
+           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+           <h3 className="text-xl font-bold text-red-900 mb-2">{t('error_loading_data')}</h3>
+           <p className="text-red-700/70 mb-6 max-w-md mx-auto">{t('check_connection_desc')}</p>
+           <button 
+             onClick={() => { refetchAllListings(); }}
+             className="bg-white text-red-600 border border-red-200 px-8 py-3 rounded-2xl font-bold hover:bg-red-100 transition-all shadow-sm shadow-red-100"
+           >
+             {t('try_again')}
+           </button>
         </div>
       ) : filteredListings.length === 0 ? (
         <div className="bg-white rounded-3xl p-16 text-center border border-dashed border-slate-200">

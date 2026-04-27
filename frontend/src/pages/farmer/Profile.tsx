@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, ShieldCheck, Building, Loader2, Edit3, Save, X, Navigation, Ruler, CheckCircle2, Leaf } from 'lucide-react';
+import { Mail, Phone, ShieldCheck, Building, Loader2, Edit3, Save, X, Ruler, CheckCircle2, Leaf } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTranslation } from 'react-i18next';
+import LocationPicker from '../../components/shared/LocationPicker';
 import { cn } from '../../lib/utils';
 
 export default function FarmerProfile() {
@@ -200,49 +201,26 @@ export default function FarmerProfile() {
 
               {/* Coordinates & Land Size */}
               <section className="space-y-6 pt-8 border-t border-slate-50">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                      <Navigation className="w-4 h-4 text-emerald-500" />
-                      {t('latitude')}
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      disabled={!isEditing}
-                      value={formData.latitude}
-                      onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) })}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                      <Navigation className="w-4 h-4 text-emerald-500" />
-                      {t('longitude')}
-                    </label>
-                    <input
-                      type="number"
-                      step="any"
-                      disabled={!isEditing}
-                      value={formData.longitude}
-                      onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) })}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                      <Ruler className="w-4 h-4 text-emerald-500" />
-                      {t('land_acres')}
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      disabled={!isEditing}
-                      value={formData.land_size_acres}
-                      onChange={(e) => setFormData({ ...formData, land_size_acres: parseFloat(e.target.value) })}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60"
-                    />
-                  </div>
+                <LocationPicker 
+                  lat={formData.latitude} 
+                  lng={formData.longitude} 
+                  onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })} 
+                  readOnly={!isEditing}
+                />
+
+                <div className="pt-4">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                    <Ruler className="w-4 h-4 text-emerald-500" />
+                    {t('land_acres')}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    disabled={!isEditing}
+                    value={formData.land_size_acres}
+                    onChange={(e) => setFormData({ ...formData, land_size_acres: parseFloat(e.target.value) })}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-60 disabled:bg-slate-50/50"
+                  />
                 </div>
               </section>
 
